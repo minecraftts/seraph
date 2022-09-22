@@ -28,6 +28,7 @@ import Seraph from "./Seraph";
 import StateManager from "./StateManager";
 import GLUtil from "./util/GLUtil";
 import MathUtil from "./util/MathUtil";
+import Versions from "./Versions";
 
 export {
     // src
@@ -37,6 +38,7 @@ export {
     DisplayEvents,
     Monitor,
     StateManager,
+    Versions,
 
     // src/errors
     DeletedError,
