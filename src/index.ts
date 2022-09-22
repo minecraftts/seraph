@@ -6,6 +6,10 @@ import GlewInitializationError from "./errors/GlewInitializationError";
 import NotImplementedError from "./errors/NotImplementedError";
 import NotInitializedError from "./errors/NotInitializedError";
 import SeraphInitializationError from "./errors/SeraphInitializationError";
+import Keyboard from "./input/Keyboard";
+import KeyboardEvents from "./input/KeyboardEvents";
+import KeyCallbackFn from "./input/KeyCallbackFn";
+import KeyState from "./input/KeyState";
 import Monitor from "./Monitor";
 import Camera from "./objects/cameras/Camera";
 import PerspectiveCamera from "./objects/cameras/PerspectiveCamera";
@@ -37,6 +41,11 @@ export {
     NotImplementedError,
     NotInitializedError,
     SeraphInitializationError,
+
+    Keyboard,
+    KeyboardEvents,
+    KeyCallbackFn,
+    KeyState,
 
     Camera,
     PerspectiveCamera,
