@@ -12,6 +12,7 @@ import DisplayEvents from "./DisplayEvents";
 import StateManager from "./StateManager";
 import Keyboard from "./input/Keyboard";
 import KeyState from "./input/KeyState";
+import Mouse from "./input/Mouse";
 
 export default class Display extends (EventEmitter as new () => TypedEventEmitter<DisplayEvents>) {
     private window: GLFWwindow;
@@ -26,6 +27,7 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
     private posY: number;
 
     private keyboard: Keyboard;
+    private mouse: Mouse;
 
     constructor(width: number = 854, height: number = 500, title: string = "Seraph") {
         super();
@@ -81,6 +83,7 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
         this.posY = yPtr.$;
 
         this.keyboard = new Keyboard(this.window);
+        this.mouse = new Mouse(this.window);
 
         this.attachListeners();
     }
@@ -94,9 +97,22 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
 
             this.emit("resize", width, height, width / height);
         });
+        
+        this.passthroughEvent(this.keyboard, "key_up");
+        this.passthroughEvent(this.keyboard, "key_down");
+        this.passthroughEvent(this.keyboard, "key_press");
 
-        this.keyboard.on("key_down", (...args) => this.emit("key_down", ...args));
-        this.keyboard.on("key_press", (...args) => this.emit("key_press", ...args))
+        this.passthroughEvent(this.mouse, "mouse_up");
+        this.passthroughEvent(this.mouse, "mouse_down");
+        this.passthroughEvent(this.mouse, "mouse_press");
+        
+        this.passthroughEvent(this.mouse, "mouse_move");
+        
+        this.passthroughEvent(this.mouse, "mouse_scroll");
+    }
+
+    private passthroughEvent<T extends EventEmitter>(object: T, event: keyof DisplayEvents) {
+        object.on(event, (...args) => this.emit<any>(event, ...args));
     }
 
     public setTitle(title: string): void {

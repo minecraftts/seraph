@@ -1,8 +1,8 @@
 import KeyboardEvents from "./input/KeyboardEvents";
+import MouseEvents from "./input/MouseEvents";
 
 type DisplayEvents = {
     "resize": (width: number, height: number, ratio: number) => void;
-    "mouse_move": (x: number, y: number, changeX: number, changeY: number) => void;
-} & KeyboardEvents;
+} & KeyboardEvents & MouseEvents;
 
 export default DisplayEvents;
