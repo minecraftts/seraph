@@ -38,6 +38,10 @@ export default class Monitor {
         return this.primaryVidMode.height;
     }
 
+    public getRefreshRate(): number {
+        return this.primaryVidMode.refreshRate;
+    }
+
     public getPrimaryVidMode(): GLFWvidmode {
         if (!Seraph.isInitialized()) {
             throw new NotInitializedError();
@@ -52,6 +56,10 @@ export default class Monitor {
         }
 
         return glfwGetVideoModes(this.native, { $: 0 });
+    }
+
+    public getNativeHandle(): GLFWmonitor {
+        return this.native;
     }
 
     public static getPrimaryMonitor(): Monitor {
