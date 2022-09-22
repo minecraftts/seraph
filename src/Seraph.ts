@@ -3,7 +3,7 @@ import { glGetString, GL_VERSION } from "@minecraftts/opengl";
 import { glewGetString, GLEW_VERSION } from "@minecraftts/opengl/glew";
 import SeraphInitializationError from "./errors/SeraphInitializationError";
 import NotInitializedError from "./errors/NotInitializedError";
-import IVersions from "./IVersions";
+import Versions from "./Versions";
 
 export default class Seraph {
     private static initialized: boolean = false;
@@ -40,7 +40,7 @@ export default class Seraph {
         this.glewInitialized = true;
     }
 
-    public static getVersions(): IVersions {
+    public static getVersions(): Versions {
         if (!this.initialized) {
             throw new NotInitializedError();
         }
@@ -51,7 +51,7 @@ export default class Seraph {
 
         glfwGetVersion(glfwMajor, glfwMinor, glfwPatch);
 
-        const versions: IVersions = {
+        const versions: Versions = {
             glfw: `${glfwMajor.$}.${glfwMinor.$}.${glfwPatch.$}`
         };
 
