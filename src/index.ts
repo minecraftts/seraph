@@ -8,7 +8,6 @@ import NotInitializedError from "./errors/NotInitializedError";
 import SeraphInitializationError from "./errors/SeraphInitializationError";
 import Keyboard from "./input/Keyboard";
 import KeyboardEvents from "./input/KeyboardEvents";
-import KeyCallbackFn from "./input/KeyCallbackFn";
 import KeyState from "./input/KeyState";
 import Monitor from "./Monitor";
 import Camera from "./objects/cameras/Camera";
@@ -27,6 +26,15 @@ import StateManager from "./StateManager";
 import GLUtil from "./util/GLUtil";
 import MathUtil from "./util/MathUtil";
 
+Seraph.initialize();
+const display = new Display();
+
+display.show();
+
+while (!display.shouldClose()) {
+    display.pollEvents();
+}
+
 export {
     Seraph,
 
@@ -44,7 +52,6 @@ export {
 
     Keyboard,
     KeyboardEvents,
-    KeyCallbackFn,
     KeyState,
 
     Camera,
