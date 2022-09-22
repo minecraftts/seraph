@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "allowUnreachableCode": false,
+        "allowJs": false,
+        "alwaysStrict": true,
+        "module": "CommonJS",
+        "target": "ES2020",
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "outDir": "build",
+        "strict": true,
+        "declaration": true
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "build"
+    ]
+}
