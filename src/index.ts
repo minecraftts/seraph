@@ -9,6 +9,9 @@ import SeraphInitializationError from "./errors/SeraphInitializationError";
 import Keyboard from "./input/Keyboard";
 import KeyboardEvents from "./input/KeyboardEvents";
 import KeyState from "./input/KeyState";
+import Mouse from "./input/Mouse";
+import MouseEvents from "./input/MouseEvents";
+import MouseState from "./input/MouseState";
 import Monitor from "./Monitor";
 import Camera from "./objects/cameras/Camera";
 import PerspectiveCamera from "./objects/cameras/PerspectiveCamera";
@@ -26,49 +29,50 @@ import StateManager from "./StateManager";
 import GLUtil from "./util/GLUtil";
 import MathUtil from "./util/MathUtil";
 
-Seraph.initialize();
-const display = new Display();
-
-display.show();
-
-while (!display.shouldClose()) {
-    display.pollEvents();
-}
-
 export {
+    // src
     Seraph,
-
     Constants,
     Display,
     DisplayEvents,
     Monitor,
     StateManager,
 
+    // src/errors
     DeletedError,
     GlewInitializationError,
     NotImplementedError,
     NotInitializedError,
     SeraphInitializationError,
 
+    // src/input
     Keyboard,
     KeyboardEvents,
     KeyState,
+    Mouse,
+    MouseEvents,
+    MouseState,
 
+    // src/objects/cameras
     Camera,
     PerspectiveCamera,
 
+    // src/objects
     Mesh,
     Scene,
 
+    // src/renderer/materials
     Material,
     MaterialOptions,
     MaterialUniformType,
     UnlitMaterial,
 
+    // src/renderer
     BufferAttribTypes,
     BufferAttribute,
     Renderer,
 
+    // src/util
     GLUtil,
     MathUtil
 };
