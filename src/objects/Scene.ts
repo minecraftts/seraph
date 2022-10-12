@@ -1,4 +1,4 @@
-import Mesh from "./Mesh";
+import Mesh from "./meshes/Mesh";
 
 export default class Scene {
     private elements: Mesh[] = [];

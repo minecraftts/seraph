@@ -1,9 +1,9 @@
 import { glBindBuffer, glBindVertexArray, glBufferData, glDeleteBuffers, glDeleteVertexArrays, glDrawArrays, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glVertexAttribPointer, GL_ARRAY_BUFFER, GL_FLOAT, GL_STATIC_DRAW, GL_TRIANGLES } from "@minecraftts/opengl";
 import { mat4, vec3 } from "gl-matrix";
-import DeletedError from "../errors/DeletedError";
-import BufferAttribute from "../renderer/BufferAttribute";
-import Material from "../renderer/materials/Material";
-import GLUtil from "../util/GLUtil";
+import DeletedError from "../../errors/DeletedError";
+import BufferAttribute from "../../renderer/BufferAttribute";
+import Material from "../../renderer/materials/Material";
+import GLUtil from "../../util/GLUtil";
 
 export default class Mesh {
     private deleted: boolean = false;
