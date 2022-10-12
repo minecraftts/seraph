@@ -7,10 +7,10 @@ export default class Renderer {
 
     }
 
-    public draw(scene: Scene, camera: Camera) {
+    public draw(scene: Scene, camera?: Camera) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (camera.isDirty()) {
+        if (camera && camera.isDirty()) {
             camera.update();
         }
 
@@ -22,7 +22,7 @@ export default class Renderer {
                     mesh.updateTransform();
                 }
 
-                if (material.hasAllUniforms([ "view_matrix", "model_matrix", "projection_matrix" ])) {
+                if (camera && material.hasAllUniforms([ "view_matrix", "model_matrix", "projection_matrix" ])) {
                     material.setUniform("view_matrix", camera.getViewMatrix());
                     material.setUniform("model_matrix", mesh.getModelMatrix());
                     material.setUniform("projection_matrix", camera.getProjectionMatrix());

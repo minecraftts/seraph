@@ -20,13 +20,22 @@ export default class StateManager {
         }
 
         glBindTexture(target, texture);
+        
         this.currentTextures[target] = texture;
     }
 
-    public static setVsync(state: boolean) {
+    public static setVsync(state: boolean): void {
         if (this.vsync !== state) {
             this.vsync = state;
             glfwSwapInterval(this.vsync ? 1 : 0);
         }
+    }
+
+    public static getCurrentTexture(target: number): number | undefined {
+        return this.currentTextures[target];
+    }
+
+    public static setTextureUnit(unit: number): void {
+
     }
 }
