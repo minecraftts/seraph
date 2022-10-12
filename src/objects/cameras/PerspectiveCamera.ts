@@ -25,6 +25,9 @@ export default class PerspectiveCamera extends Camera {
         mat4.perspective(this.projectionMatrix, this.fov, this.aspect, this.near, this.far);
     }
 
+    /**
+     * @param ratio the new aspect ratio
+     */
     public setAspectRatio(ratio: number): void {
         this.aspect = ratio;
         this.projectionDirty = true;
