@@ -14,10 +14,17 @@ export default class Texture {
         this.setImage(image);
     }
 
+    /**
+     * Binds the texture
+     */
     public use(): void {
         StateManager.bindTexture(GL_TEXTURE_2D, this.texture);
     }
 
+    /**
+     * Sets the texture's data
+     * @param image a `BufferedImage` containing the texture's data
+     */
     public setImage(image: BufferedImage): void {
         const previousTexture = StateManager.getCurrentTexture(GL_TEXTURE_2D);
         const data = image.getData();
