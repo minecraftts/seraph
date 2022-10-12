@@ -7,6 +7,10 @@ export default class Renderer {
 
     }
 
+    /**
+     * @param scene the scene to draw
+     * @param camera an optional camera to draw the scene from
+     */
     public draw(scene: Scene, camera?: Camera) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -33,6 +37,11 @@ export default class Renderer {
         })
     }
 
+    /**
+     * @param r red value from `0` to `1`
+     * @param g green value from `0` to `1`
+     * @param b blue value from `0` to `1`
+     */
     public setClearColor(r: number, g: number, b: number) {
         glClearColor(r, g, b, 1);   
     }
