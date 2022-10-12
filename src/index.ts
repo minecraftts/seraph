@@ -15,7 +15,8 @@ import MouseState from "./input/MouseState";
 import Monitor from "./Monitor";
 import Camera from "./objects/cameras/Camera";
 import PerspectiveCamera from "./objects/cameras/PerspectiveCamera";
-import Mesh from "./objects/Mesh";
+import Mesh from "./objects/meshes/Mesh";
+import Plane from "./objects/meshes/Plane";
 import Scene from "./objects/Scene";
 import BufferAttribTypes from "./renderer/BufferAttribTypes";
 import BufferAttribute from "./renderer/BufferAttribute";
@@ -29,10 +30,15 @@ import StateManager from "./StateManager";
 import GLUtil from "./util/GLUtil";
 import MathUtil from "./util/MathUtil";
 import Versions from "./Versions";
+import Screen from "./objects/meshes/Screen";
+import Texture from "./renderer/textures/Texture";
+import TextureFilterMode from "./renderer/textures/TextureFilterMode";
+import CanvasDisplay from "./CanvasDisplay";
 
 export {
     // src
     Seraph,
+    CanvasDisplay,
     Constants,
     Display,
     DisplayEvents,
@@ -59,8 +65,12 @@ export {
     Camera,
     PerspectiveCamera,
 
-    // src/objects
+    // src/objects/meshes
     Mesh,
+    Plane,
+    Screen,
+
+    // src/objects
     Scene,
 
     // src/renderer/materials
@@ -68,6 +78,10 @@ export {
     MaterialOptions,
     MaterialUniformType,
     UnlitMaterial,
+
+    // src/renderer/textures
+    Texture,
+    TextureFilterMode,
 
     // src/renderer
     BufferAttribTypes,
