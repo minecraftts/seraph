@@ -14,6 +14,9 @@ import Keyboard from "./input/Keyboard";
 import KeyState from "./input/KeyState";
 import Mouse from "./input/Mouse";
 
+/**
+ * Window class
+ */
 export default class Display extends (EventEmitter as new () => TypedEventEmitter<DisplayEvents>) {
     private window: GLFWwindow;
 
@@ -112,47 +115,81 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
         object.on(event, (...args) => this.emit<any>(event, ...args));
     }
 
+    /**
+     * @param title the display's new title
+     */
     public setTitle(title: string): void {
         glfwSetWindowTitle(this.window, title);
     }
 
+    /**
+     * Show the window, this should always be called after creation as the window is hidden by default
+     */
     public show(): void {
         glfwShowWindow(this.window);
     }
 
+    /**
+     * Poll events (keypresses, mouse movement, mouse clicks, window resize, window close, etc)
+     */
     public pollEvents(): void {
         glfwPollEvents();
     }
 
+    /**
+     * Swap the back and front buffer, should be called after rendering to display frame on screen
+     */
     public swapBuffers(): void {
         StateManager.setVsync(this.vsync);
         glfwSwapBuffers(this.window);
     }
 
+    /**
+     * @returns whether the window is getting ready to close, if this is `true` you should do cleanup, program exit, etc 
+     */
     public shouldClose(): boolean {
         return glfwWindowShouldClose(this.window);
     }
 
+    /**
+     * @param vsync boolean indicating whether vsync should be on or off for this window
+     */
     public setVsync(vsync: boolean): void {
         this.vsync = vsync;
     }
 
+    /**
+     * @returns window width in pixels
+     */
     public getWidth(): number {
         return this.width;
     }
 
+    /**
+     * @returns window height in pixels 
+     */
     public getHeight(): number {
         return this.height;
     }
 
+    /**
+     * Hides and locks the cursor to the window
+     */
     public lockCursor(): void {
         glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
+    /**
+     * Shows and unlocks the cursor from the window
+     */
     public unlockCursor(): void {
         glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
+    /**
+     * Switches the window in/out of fullscreen
+     * @param vidMode the desired fullscreen video mode
+     */
     public toggleFullscreen(vidMode?: GLFWvidmode): void {
         const xPtr: Pointer<number> = { $: 0 };
         const yPtr: Pointer<number> = { $: 0 };
@@ -176,28 +213,49 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
             this.fullscreen ? GLFW_DONT_CARE : vidMode?.refreshRate ?? primaryMonitor.getPrimaryVidMode().refreshRate);
     }
 
+    /**
+     * @returns the underlying `GLFWwindow`
+     */
     public getNativeHandle(): GLFWwindow {
         return this.window;
     }
 
+    /**
+     * @returns the underlying `Keyboard` object
+     */
     public getKeyboard(): Keyboard {
         return this.keyboard;
     }
 
+    /**
+     * @param keycode the key to check press state for
+     * @returns `true` if the key defined by `keycode` is currently pressed, `false` otherwise 
+     */
     public getKeyDown(keycode: number): boolean {
         return this.keyboard.getKeyDown(keycode);
     }
 
+    /**
+     * @param keycode the key to get state for
+     * @returns a `KeyState` if the key defined by `keycode` is currently pressed, `undefined` otherwise
+     */
     public getKeyState(keycode: number): KeyState | undefined {
         return this.keyboard.getKeyState(keycode);
     }
 
+    /**
+     * Tells the window to enable/disable raw motion. Please note raw motion is not supported on all systems.
+     * @param state a boolean indicating whether raw motion should be enabled or disabled for this window
+     */
     public useRawMotion(state: boolean): void {
         if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(this.window, GLFW_RAW_MOUSE_MOTION, state ? GLFW_TRUE : GLFW_FALSE);
         }
     }
 
+    /**
+     * Tells the window it should close
+     */
     public close(): void {
         glfwSetWindowShouldClose(this.window, <boolean><unknown>GLFW_TRUE);
     }
