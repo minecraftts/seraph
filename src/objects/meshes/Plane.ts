@@ -1,6 +1,9 @@
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Mesh from "./Mesh";
 
+/**
+ * Mesh representing a flat plane
+ */
 export default class Plane extends Mesh {
     constructor() {
         super();
