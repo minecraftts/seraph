@@ -23,6 +23,11 @@ export default class Camera {
         this.projectionDirty = true;
     }
 
+    /**
+     * @param x camera x coord
+     * @param y camera y coord
+     * @param z camera z coord
+     */
     public setPosition(x: number, y: number, z: number): void {
         this.position[0] = x;
         this.position[1] = y;
@@ -31,6 +36,11 @@ export default class Camera {
         this.viewDirty = true;
     }
 
+    /**
+     * @param x x axis to rotate by
+     * @param y y axis to rotate by
+     * @param z z axis to rotate by
+     */
     public rotate(x: number, y: number = 0, z: number = 0): void {
         const newRotation = vec3.create();
 
@@ -67,26 +77,44 @@ export default class Camera {
         mat4.translate(this.viewMatrix, this.viewMatrix, this.position);
     }
 
+    /**
+     * @returns the camera's projection matrix
+     */
     public getProjectionMatrix(): mat4 {
         return this.projectionMatrix;
     }
 
+    /**
+     * @returns the camera's view matrix
+     */
     public getViewMatrix(): mat4 {
         return this.viewMatrix;
     }
 
+    /**
+     * @returns `true` if the view matrix or projection matrix needs to be updated, `false` otherwise 
+     */
     public isDirty(): boolean {
         return this.viewDirty || this.projectionDirty;
     }
 
+    /**
+     * @returns `true` if the view matrix needs to be updated, `false` otherwise
+     */
     public isViewDirty(): boolean {
         return this.viewDirty;
     }
 
+    /**
+     * @returns `true` if the projection matrix needs to be updated, `false` otherwise 
+     */
     public isProjectionDirty(): boolean {
         return this.projectionDirty;
     }
 
+    /**
+     * Updates the view and or projection matrix if they need to be updated.
+     */
     public update(): void {
         if (this.viewDirty) this.updateViewMatrix();
         if (this.projectionDirty && this instanceof Camera) this.updateProjectionMatrix();
