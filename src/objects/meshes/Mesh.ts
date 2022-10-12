@@ -5,6 +5,9 @@ import BufferAttribute from "../../renderer/BufferAttribute";
 import Material from "../../renderer/materials/Material";
 import GLUtil from "../../util/GLUtil";
 
+/**
+ * Base mesh class
+ */
 export default class Mesh {
     private deleted: boolean = false;
     private material?: Material;
@@ -42,6 +45,10 @@ export default class Mesh {
         this.transformDirty = true;
     }
 
+    /**
+     * @param key attribute key
+     * @param bufferAttrib attribute to set `key` to
+     */
     public setBufferAttrib(key: string, bufferAttrib: BufferAttribute): void {
         if (this.deleted) {
             throw new DeletedError();
@@ -50,6 +57,9 @@ export default class Mesh {
         this.bufferAttribs[key] = bufferAttrib;
     }
 
+    /**
+     * Recreates the mesh's buffer, must be called after updating any buffer attributes
+     */
     public updateBuffers(): void {
         if (this.deleted) {
             throw new DeletedError();
@@ -104,6 +114,11 @@ export default class Mesh {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
+    /**
+     * @param x mesh x coord
+     * @param y mesh y coord
+     * @param z mesh z coord
+     */
     public setPosition(x: number, y: number = 0, z: number = 0): void {
         this.position[0] = x;
         this.position[1] = y;
@@ -112,6 +127,11 @@ export default class Mesh {
         this.transformDirty = true;
     }
 
+    /**
+     * @param x rotation x axis 
+     * @param y rotation y axis
+     * @param z rotation z axis
+     */
     public setRotation(x: number, y: number = 0, z: number = 0): void {
         this.rotation[0] = x;
         this.rotation[1] = y;
@@ -120,6 +140,11 @@ export default class Mesh {
         this.transformDirty = true;
     }
 
+    /**
+     * @param x x axis to rotate by
+     * @param y y axis to rotate by
+     * @param z z axis to rotate by
+     */
     public rotate(x: number, y: number = 0, z: number = 0): void {
         const newRotation = vec3.create();
 
@@ -132,6 +157,11 @@ export default class Mesh {
         this.transformDirty = true;
     }
 
+    /**
+     * @param x x coord to move mesh by
+     * @param y y coord to move mesh by
+     * @param z z coord to move mesh by
+     */
     public move(x: number, y: number = 0, z: number = 0): void {
         const newPosition = vec3.create();
 
@@ -144,22 +174,37 @@ export default class Mesh {
         this.transformDirty = true;
     }
 
+    /**
+     * @returns `true` if the transformation matrix needs to be updated, `false` otherwise
+     */
     public isTransformDirty(): boolean {
         return this.transformDirty;
     }
 
+    /**
+     * @param material the material this mesh should use 
+     */
     public setMaterial(material: Material): void {
         this.material = material;
     }
 
+    /**
+     * @param count the number of vertices this mesh has
+     */
     public setVertexCount(count: number): void {
         this.vertexCount = count;
     }
 
+    /**
+     * @returns the material currently being used by this mesh 
+     */
     public getMaterial(): Material | undefined {
         return this.material;
     }
 
+    /**
+     * Updates the mesh's transformation matrix
+     */
     public updateTransform(): void {
         this.modelMatrix = mat4.create();
         
@@ -171,10 +216,16 @@ export default class Mesh {
         this.transformDirty = false;
     }
 
+    /**
+     * @returns the mesh's model matrix
+     */
     public getModelMatrix(): mat4 {
         return this.modelMatrix;
     }
 
+    /**
+     * Bind the material and draw the mesh's geometry
+     */
     public draw(): void {
         if (typeof this.material !== "undefined") {
             this.material.use();
@@ -184,6 +235,9 @@ export default class Mesh {
         } 
     }
 
+    /**
+     * Free any resources used by this mesh
+     */
     public cleanup(): void {
         glDeleteVertexArrays(1, new Uint32Array(this.vao));
         glDeleteBuffers(1, new Uint32Array(this.vbo));
