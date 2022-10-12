@@ -1,4 +1,4 @@
-import { GLFWwindow, glfwCreateWindow, glfwWindowHint, GLFW_VISIBLE, GLFW_FALSE, GLFW_FOCUS_ON_SHOW, GLFW_TRUE, GLFW_CONTEXT_VERSION_MAJOR, GLFW_CONTEXT_VERSION_MINOR, glfwMakeContextCurrent, glfwGetWindowSize, Pointer, glfwSetWindowPos, glfwShowWindow, glfwSwapBuffers, glfwPollEvents, glfwWindowShouldClose, glfwSwapInterval, glfwSetWindowSizeCallback, GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE, GLFW_OPENGL_FORWARD_COMPAT, glfwSetFramebufferSizeCallback, glfwSetWindowTitle, glfwSetInputMode, GLFW_CURSOR, GLFW_CURSOR_DISABLED, GLFW_CURSOR_NORMAL, GLFWvidmode, glfwSetWindowMonitor, glfwGetWindowPos, GLFW_DONT_CARE, glfwRawMouseMotionSupported, GLFW_RAW_MOUSE_MOTION } from "@minecraftts/glfw";
+import { GLFWwindow, glfwCreateWindow, glfwWindowHint, GLFW_VISIBLE, GLFW_FALSE, GLFW_FOCUS_ON_SHOW, GLFW_TRUE, GLFW_CONTEXT_VERSION_MAJOR, GLFW_CONTEXT_VERSION_MINOR, glfwMakeContextCurrent, glfwGetWindowSize, Pointer, glfwSetWindowPos, glfwShowWindow, glfwSwapBuffers, glfwPollEvents, glfwWindowShouldClose, glfwSwapInterval, glfwSetWindowSizeCallback, GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE, GLFW_OPENGL_FORWARD_COMPAT, glfwSetFramebufferSizeCallback, glfwSetWindowTitle, glfwSetInputMode, GLFW_CURSOR, GLFW_CURSOR_DISABLED, GLFW_CURSOR_NORMAL, GLFWvidmode, glfwSetWindowMonitor, glfwGetWindowPos, GLFW_DONT_CARE, glfwRawMouseMotionSupported, GLFW_RAW_MOUSE_MOTION, glfwSetWindowShouldClose } from "@minecraftts/glfw";
 import { glewGetErrorString, glewInit, GLEW_OK } from "@minecraftts/opengl/glew";
 import { glViewport } from "@minecraftts/opengl";
 import GlewInitializationError from "./errors/GlewInitializationError";
@@ -46,10 +46,7 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-        if (process.platform === "darwin") {
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-        }
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
         this.window = glfwCreateWindow(width, height, title, null, null);
 
@@ -97,7 +94,7 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
 
             this.emit("resize", width, height, width / height);
         });
-        
+
         this.passthroughEvent(this.keyboard, "key_up");
         this.passthroughEvent(this.keyboard, "key_down");
         this.passthroughEvent(this.keyboard, "key_press");
@@ -199,5 +196,9 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
         if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(this.window, GLFW_RAW_MOUSE_MOTION, state ? GLFW_TRUE : GLFW_FALSE);
         }
+    }
+
+    public close(): void {
+        glfwSetWindowShouldClose(this.window, <boolean><unknown>GLFW_TRUE);
     }
 }
