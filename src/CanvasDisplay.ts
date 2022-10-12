@@ -9,6 +9,9 @@ import Renderer from "./renderer/Renderer";
 import path from "path";
 import Texture from "./renderer/textures/Texture";
 
+/**
+ * Canvas window
+ */
 export default class CanvasDisplay extends Display {
     private texture: Texture;
     private image: BufferedImage;
@@ -45,6 +48,9 @@ export default class CanvasDisplay extends Display {
         });
     }
 
+    /**
+     * Draws the canvas contents to screen and swaps back and front buffers.
+     */
     public swapBuffers(): void {
         this.texture.use();
         this.texture.setImage(this.image);
@@ -53,6 +59,9 @@ export default class CanvasDisplay extends Display {
         super.swapBuffers();
     }
 
+    /**
+     * @returns the canvas rendering context
+     */
     public getGraphics(): CanvasRenderingContext2D {
         return this.image.getGraphics();
     }
