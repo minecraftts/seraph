@@ -8,6 +8,9 @@ type Uniforms = {
     projection_matrix: "mat4x4"
 }
 
+/**
+ * Simple unlit material
+ */
 export default class UnlitMaterial extends Material<Uniforms> {
     constructor() {
         super({
