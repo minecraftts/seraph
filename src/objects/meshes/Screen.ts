@@ -1,6 +1,9 @@
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Mesh from "./Mesh";
 
+/**
+ * Mesh representing a full-size 2d screen
+ */
 export default class Screen extends Mesh {
     private width: number;
     private height: number;
