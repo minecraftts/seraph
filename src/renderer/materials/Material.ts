@@ -4,10 +4,9 @@ import StateManager from "../../StateManager";
 import MaterialOptions from "./MaterialOptions";
 import MaterialUniformType from "./MaterialUniformType";
 
-type ElementType < T extends ReadonlyArray <unknown>> = T extends ReadonlyArray<infer ElementType>
-    ? ElementType
-    : never
-
+/**
+ * Base material class
+ */
 export default class Material<T extends Record<string, MaterialUniformType> = {}> {
     private vertexSrc: string;
     private fragmentSrc: string;
@@ -35,6 +34,11 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         this.compile();
     }
 
+    /**
+     * Registers a uniform and gets it's location
+     * @param key uniform name
+     * @param type uniform type
+     */
     protected registerUniform(key: keyof T, type: T[keyof T]): void {
         const location = glGetUniformLocation(this.program, <string>key);
 
@@ -50,6 +54,9 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         };
     }
 
+    /**
+     * Compiles the material
+     */
     public compile(): void {
         const vertexShader: number = glCreateShader(GL_VERTEX_SHADER);
         const fragmentShader: number = glCreateShader(GL_FRAGMENT_SHADER);
@@ -110,6 +117,11 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         glDeleteShader(fragmentShader);
     }
 
+    /**
+     * Sets a uniform, the type of the value is determined in the call to `registerUniform`
+     * @param key uniform name
+     * @param value uniform value
+     */
     public setUniform(key: keyof T, value: unknown): void {
         if (key in this.registeredUniforms) {
             const {
@@ -150,10 +162,19 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         }
     }
 
+    /**
+     * @param key uniform name
+     * @returns `true` if the material has a uniform named by `key`, `false` otherwise
+     */
     public hasUniform(key: string): boolean {
         return key in this.registeredUniforms;
     }
 
+    /**
+     * 
+     * @param keys array of uniform names
+     * @returns `true` if the material has all the uniforms specified by `keys`, `false` otherwise
+     */
     public hasAllUniforms(keys: string[]): this is Material<Record<typeof keys[number], MaterialUniformType>> {
         for (const key of keys) {
             if (!(key in this.registeredUniforms)) return false;
@@ -162,6 +183,9 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         return true;
     }
 
+    /**
+     * Binds the material
+     */
     public use(): void {
         StateManager.useProgram(this.program);
     }
