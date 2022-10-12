@@ -2,6 +2,10 @@ import { GL_BYTE, GL_FLOAT, GL_INT, GL_SHORT, GL_UNSIGNED_BYTE, GL_UNSIGNED_INT,
 import BufferAttribTypes from "../renderer/BufferAttribTypes";
 
 export default class GLUtil {
+    /**
+     * @param type a `BufferAttribType`
+     * @returns the byte width for the type
+     */
     public static bufferAttribWidth(type: BufferAttribTypes): number {
         switch (type) {
             case GL_BYTE:
