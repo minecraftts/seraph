@@ -1,87 +1,118 @@
-# seraph
+# Seraph
 
-Seraph is a work in progress renderer for MinecraftTS
+Seraph is a simple and small OpenGL renderer for Node.js.
 
-### Installation
+## Installation
 
-You will need all dependencies required by [`@minecraftts/opengl`](https://github.com/minecraftts/opengl) and [`@minecraftts/glfw`](https://github.com/minecraftts/glfw). Then installation is as simple as `npm install @minecraftts/seraph`
+You will CMake as well as any other C++ build tools installed as Seraph uses native modules which must be built.
 
-### Building
+After installing C++ build tools you can go ahead and run
+```sh
+npm install @minecraftts/seraph --save
+```
 
-Install all required dependencies via `npm install` then build with `npm run build`
+## Quick Start
 
-### Usage
+While Seraph is somewhat more verbose than other 3D libraries for JavaScript it gives you a ton of control, including adding your own OpenGL code during rendering.
 
-While extremely verbose (compared to other 3D engines for JavaScript) this hides away a lot of the ugly OpenGL code you'd otherwise have to deal with.
+### Canvas
 
-Example:
+Canvas is the easiest to use, but also quite a bit slower than OpenGL as it is software rendered
+
+**Example:**
 
 ```ts
-import { GL_FLOAT } from "@minecraftts/opengl";
-import Display from "@minecraftts/seraph/Display";
-import PerspectiveCamera from "@minecraftts/seraph/objects/cameras/PerspectiveCamera";
-import Mesh from "@minecraftts/seraph/objects/Mesh";
-import Scene from "@minecraftts/seraph/objects/Scene";
-import BufferAttribute from "@minecraftts/seraph/renderer/BufferAttribute";
-import UnlitMaterial from "@minecraftts/seraph/renderer/materials/UnlitMaterial";
-import Renderer from "@minecraftts/seraph/renderer/Renderer";
-import Seraph from "@minecraftts/seraph";
-import MathUtil from "@minecraftts/seraph/util/MathUtil";
+import { Seraph, CanvasDisplay } from "@minecraftts/seraph";
 
+// initialize the engine, this must be done before anything else
 Seraph.initialize();
 
-const display = new Display(undefined, undefined, "Hello World");
-const renderer = new Renderer();
-const scene = new Scene();
+// create a canvas display, this is our canvas/window
+const display = new CanvasDisplay();
 
-const positionAttrib = new BufferAttribute(0, 3, false);
-const colorAttrib = new BufferAttribute(1, 3, false);
+// get the window context
+let context = display.getGraphics();
 
-positionAttrib.setBuffer(new Float32Array([
-    -0.5, -0.5, 0.0,
-     0.5, -0.5, 0.0,
-     0.0,  0.5, 0.0,
-]));
+// we need to get a new context everytime the window resizes due to the old one being deleted
+display.on("resize", () => { context = display.getGraphics() });
 
-colorAttrib.setBuffer(new Float32Array([
-    1.0, 0.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 0.0, 1.0,
-]));
-
-const mesh = new Mesh();
-
-mesh.setBufferAttrib("pos", positionAttrib);
-mesh.setBufferAttrib("color", colorAttrib);
-mesh.setVertexCount(3);
-
-mesh.updateBuffers();
-
-const material = new UnlitMaterial();
-const camera = new PerspectiveCamera();
-
-camera.setPosition(0, 0, -1);
-camera.setAspectRatio(display.getWidth() / display.getHeight());
-
-display.on("resize", (width, height, ratio) => {
-    console.log(`window resized to ${width}x${height}`)
-
-    camera.setAspectRatio(ratio);
-});
-
-mesh.setMaterial(material);
-scene.add(mesh);
-
+// finally show our window and start our game loop
 display.show();
 
-renderer.setClearColor(0.2, 0.3, 0.7);
-
 while (!display.shouldClose()) {
+    // poll events (keyboard input, window events, etc)
     display.pollEvents();
 
-    camera.rotate(0, MathUtil.degreesToRad(1), 0);
-    renderer.draw(scene, camera);
+    // set the fill color to white
+    context.fillStyle = "white";
+    // fill our background
+    context.fillRect(0, 0, display.getWidth(), display.getHeight());
+    // set the fill color to black
+    context.fillStyle = "black";
+    // set the font
+    context.font = "48px serif";
+    // finally draw text
+    context.fillText("Hello Seraph", 10, 50);
 
+    // swap buffers so what we just drew is visible on the screen
     display.swapBuffers();
 }
 ```
+
+### OpenGL
+
+```ts
+import { Seraph, Display, Plane, Renderer, Scene, UnlitMaterial, PerspectiveCamera, MathUtil } from "@minecraftts/seraph";
+
+// initialize the engine, this must be done before anything else
+Seraph.initialize();
+
+// create a display, this is our window
+const display = new Display();
+// create a renderer, this will draw into our window
+const renderer = new Renderer();
+// create a scene, the renderer will draw all objects added to the scene
+const scene = new Scene();
+// create a camera
+const camera = new PerspectiveCamera();
+
+// create a mesh
+const floor = new Plane();
+
+// assign a new unlit material to the mesh
+floor.setMaterial(new UnlitMaterial());
+
+// move the camera up by 2 units
+camera.setPosition(0, 2, 0);
+// set the aspect ratio
+camera.setAspectRatio(display.getWidth() / display.getHeight());
+// finally rotate the camera downwards
+camera.rotate(-MathUtil.degreesToRad(90), 0, 0);
+
+// if the display resizes we need to set the aspect ratio again or else the projection will be messed up
+display.on("resize", (width, height, aspect) => { camera.setAspectRatio(aspect) });
+
+// add the floor mesh to the scene
+scene.add(floor);
+
+// set the background color
+renderer.setClearColor(0.2, 0.3, 0.7);
+
+// finally show the window and start our game loop
+display.show();
+
+while (!display.shouldClose()) {
+    // poll events (keyboard input, window events, etc)
+    display.pollEvents();
+
+    // draw our scene
+    renderer.draw(scene, camera);
+
+    // finally swap the front and back buffer so it's visible on the screen
+    display.swapBuffers();
+}
+```
+
+## License
+
+Seraph is licensed under the MIT license.
