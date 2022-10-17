@@ -2,6 +2,9 @@
 
 Seraph is a simple and small OpenGL renderer for Node.js.
 
+### Notice
+Seraph is currently not stable, API will change without a major version bump. Deprecations may or may not be present before a class/method/namespace/type undergoes breaking changes.
+
 ## Installation
 
 You will CMake as well as any other C++ build tools installed as Seraph uses native modules which must be built.
