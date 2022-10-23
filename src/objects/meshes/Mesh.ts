@@ -1,9 +1,10 @@
-import { glBindBuffer, glBindVertexArray, glBufferData, glDeleteBuffers, glDeleteVertexArrays, glDrawArrays, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glVertexAttribPointer, GL_ARRAY_BUFFER, GL_FLOAT, GL_STATIC_DRAW, GL_TRIANGLES } from "@minecraftts/opengl";
+import { glBindBuffer, glBindVertexArray, glBufferData, glDeleteBuffers, glDeleteVertexArrays, glDrawArrays, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glVertexAttribPointer, GL_ARRAY_BUFFER, GL_FLOAT, GL_TRIANGLES } from "@minecraftts/opengl";
 import { mat4, vec3 } from "gl-matrix";
 import DeletedError from "../../errors/DeletedError";
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Material from "../../renderer/materials/Material";
 import GLUtil from "../../util/GLUtil";
+import DrawType from "./DrawType";
 
 /**
  * Base mesh class
@@ -25,6 +26,8 @@ export default class Mesh {
 
     private modelMatrix: mat4;
 
+    private drawType: DrawType;
+
     public constructor() {
         const vaoPtr: Uint32Array = new Uint32Array(1);
         const vboPtr: Uint32Array = new Uint32Array(1);
@@ -43,6 +46,7 @@ export default class Mesh {
         this.modelMatrix = mat4.create();
 
         this.transformDirty = true;
+        this.drawType = DrawType.STATIC;
     }
 
     /**
@@ -98,7 +102,7 @@ export default class Mesh {
         glBindVertexArray(this.vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
-        glBufferData(GL_ARRAY_BUFFER, buffer.byteLength, buffer, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, buffer.byteLength, buffer, this.drawType);
 
         let currentOffset: number = 0;
 
@@ -233,6 +237,16 @@ export default class Mesh {
             glBindVertexArray(this.vao);
             glDrawArrays(GL_TRIANGLES, 0, this.vertexCount);
         } 
+    }
+
+    /**
+     * Sets the specified draw type and updates buffers
+     * @param type {DrawType} specified draw type
+     * @returns {void}
+     */
+    public setDrawType(type: DrawType): void {
+        this.drawType = type;
+        this.updateBuffers();
     }
 
     /**
