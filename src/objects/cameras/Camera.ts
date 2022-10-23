@@ -1,7 +1,7 @@
 import { mat4, vec3 } from "gl-matrix";
 import NotImplementedError from "../../errors/NotImplementedError";
 
-export default class Camera {
+export default abstract class Camera {
     protected position: vec3;
     protected rotation: vec3;
     protected rotationPoint: vec3;
@@ -53,9 +53,7 @@ export default class Camera {
         this.viewDirty = true;
     }
 
-    protected updateProjectionMatrix(): void {
-        throw new NotImplementedError("Camera.updateProjectionMatrix");
-    }
+    protected abstract updateProjectionMatrix(): void;
 
     protected updateViewMatrix(): void {
         this.viewMatrix = mat4.create();
