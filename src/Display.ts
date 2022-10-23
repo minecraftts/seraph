@@ -13,6 +13,9 @@ import StateManager from "./StateManager";
 import Keyboard from "./input/Keyboard";
 import KeyState from "./input/KeyState";
 import Mouse from "./input/Mouse";
+import DisplayOptions from "./DisplayOptions";
+import ObjectUtil from "./util/ObjectUtil";
+import Subset from "./util/Subset";
 
 /**
  * Window class
@@ -32,8 +35,50 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
     private keyboard: Keyboard;
     private mouse: Mouse;
 
-    constructor(width: number = 854, height: number = 500, title: string = "Seraph") {
+    /**
+     * Creates a new display
+     * @param width {number} window width
+     * @param height {number} window height
+     * @param title {string} window title
+     * @deprecated use `new Display(options?: Subset<DisplayOptions>)` instead
+     * @returns {Display}
+     */
+    constructor(width?: number, height?: number, title?: string);
+    /**
+     * Creates a new display
+     * @param options {Subset<DisplayOptions> | undefined} window creation options
+     * @returns {Display} 
+     */
+    constructor(options?: Subset<DisplayOptions>);
+    constructor(widthOrOptions?: number | Subset<DisplayOptions>, height?: number, title?: string) {
         super();
+
+        const defaultOptions: DisplayOptions = {
+            width: 854,
+            height: 480,
+            title: "Seraph",
+            show: true,
+            focusOnShow: true,
+            context: {
+                major: 3,
+                minor: 3,
+                forwardCompat: true
+            }
+        };
+
+        let options: DisplayOptions = <DisplayOptions>{};
+
+        if (typeof widthOrOptions === "number") {
+            options = <DisplayOptions>({
+                width: <number>widthOrOptions,
+                height,
+                title
+            });
+        } else if (typeof widthOrOptions === "object") {
+            options = <DisplayOptions>widthOrOptions;
+        }
+
+        ObjectUtil.deepMerge(options, defaultOptions);
 
         if (!Seraph.isInitialized()) {
             throw new NotInitializedError();
@@ -44,14 +89,14 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
         this.vsync = true;
         this.fullscreen = false;
 
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_VISIBLE, options.show ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_FOCUS_ON_SHOW, options.focusOnShow ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, options.context.major);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, options.context.minor);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, options.context.forwardCompat ? GLFW_TRUE : GLFW_FALSE);
 
-        this.window = glfwCreateWindow(width, height, title, null, null);
+        this.window = glfwCreateWindow(options.width, options.height, options.title, null, null);
 
         const realWidth: Pointer<number> = { $: 0 };
         const realHeight: Pointer<number> = { $: 0 };
