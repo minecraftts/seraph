@@ -2,11 +2,16 @@
 
 out vec4 frag_color;
 
-in vec3 vertex_color;
+in vec4 vertex_color;
 in vec2 uv;
 
+uniform int tex_bound;
 uniform sampler2D tex;
 
 void main() {
-    frag_color = vec4(vertex_color, 1.0) * texture(tex, uv);
+    if (tex_bound == 1) {
+        frag_color = vertex_color * texture(tex, uv);
+    } else {
+        frag_color = vertex_color;
+    }
 }
