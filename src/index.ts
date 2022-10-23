@@ -35,6 +35,12 @@ import Texture from "./renderer/textures/Texture";
 import TextureFilterMode from "./renderer/textures/TextureFilterMode";
 import CanvasDisplay from "./CanvasDisplay";
 
+import glmatrix from "gl-matrix";
+
+const math = {
+    ...glmatrix
+};
+
 export {
     // src
     Seraph,
@@ -90,5 +96,8 @@ export {
 
     // src/util
     GLUtil,
-    MathUtil
+    MathUtil,
+
+    // gl-matrix
+    math
 };
