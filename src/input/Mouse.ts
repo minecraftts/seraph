@@ -1,4 +1,4 @@
-import { glfwSetCursorPosCallback, glfwSetMouseButtonCallback, glfwSetScrollCallback, GLFWwindow, GLFW_PRESS, GLFW_RELEASE } from "@minecraftts/glfw";
+import { glfwSetCursorPosCallback, glfwSetMouseButtonCallback, glfwSetScrollCallback, GLFWwindow, GLFW_MOUSE_BUTTON_1, GLFW_MOUSE_BUTTON_2, GLFW_MOUSE_BUTTON_3, GLFW_MOUSE_BUTTON_4, GLFW_MOUSE_BUTTON_5, GLFW_MOUSE_BUTTON_6, GLFW_MOUSE_BUTTON_7, GLFW_MOUSE_BUTTON_8, GLFW_MOUSE_BUTTON_LAST, GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, GLFW_RELEASE } from "@minecraftts/glfw";
 import EventEmitter from "events";
 import TypedEventEmitter from "typed-emitter";
 import MouseEvents from "./MouseEvents";
@@ -61,4 +61,19 @@ export default class Mouse extends (EventEmitter as new () => TypedEventEmitter<
     private mouseScrollListener(window: GLFWwindow, xoffset: number, yoffset: number): void {
         this.emit("mouse_scroll", xoffset, yoffset);
     }
+
+    public static Buttons = class Buttons {
+        public static BUTTON_1: typeof GLFW_MOUSE_BUTTON_1 = GLFW_MOUSE_BUTTON_1;
+        public static BUTTON_2: typeof GLFW_MOUSE_BUTTON_2 = GLFW_MOUSE_BUTTON_2;
+        public static BUTTON_3: typeof GLFW_MOUSE_BUTTON_3 = GLFW_MOUSE_BUTTON_3;
+        public static BUTTON_4: typeof GLFW_MOUSE_BUTTON_4 = GLFW_MOUSE_BUTTON_4;
+        public static BUTTON_5: typeof GLFW_MOUSE_BUTTON_5 = GLFW_MOUSE_BUTTON_5;
+        public static BUTTON_6: typeof GLFW_MOUSE_BUTTON_6 = GLFW_MOUSE_BUTTON_6;
+        public static BUTTON_7: typeof GLFW_MOUSE_BUTTON_7 = GLFW_MOUSE_BUTTON_7;
+        public static BUTTON_8: typeof GLFW_MOUSE_BUTTON_8 = GLFW_MOUSE_BUTTON_8;
+        public static BUTTON_LAST: typeof GLFW_MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST;
+        public static BUTTON_LEFT: typeof GLFW_MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
+        public static BUTTON_RIGHT: typeof GLFW_MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
+        public static BUTTON_MIDDLE: typeof GLFW_MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
+    };
 }
