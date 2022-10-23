@@ -34,6 +34,8 @@ import Screen from "./objects/meshes/Screen";
 import Texture from "./renderer/textures/Texture";
 import TextureFilterMode from "./renderer/textures/TextureFilterMode";
 import CanvasDisplay from "./CanvasDisplay";
+import BuildableMesh from "./objects/meshes/BuildableMesh";
+import DrawType from "./objects/meshes/DrawType";
 
 import glmatrix from "gl-matrix";
 
@@ -72,6 +74,8 @@ export {
     PerspectiveCamera,
 
     // src/objects/meshes
+    BuildableMesh,
+    DrawType,
     Mesh,
     Plane,
     Screen,
