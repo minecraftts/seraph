@@ -9,7 +9,7 @@ enum DrawType {
      */
     STATIC = GL_STATIC_DRAW,
     /**
-     * The mesh will be modified frequently and drew frequently
+     * The mesh will be modified frequently and drawn frequently
      */
     DYNAMIC = GL_DYNAMIC_DRAW
 }
