@@ -36,6 +36,9 @@ import TextureFilterMode from "./renderer/textures/TextureFilterMode";
 import CanvasDisplay from "./CanvasDisplay";
 import BuildableMesh from "./objects/meshes/BuildableMesh";
 import DrawType from "./objects/meshes/DrawType";
+import ObjectUtil from "./util/ObjectUtil";
+import Subset from "./util/Subset";
+import DisplayOptions from "./DisplayOptions";
 
 import glmatrix from "gl-matrix";
 
@@ -50,6 +53,7 @@ export {
     Constants,
     Display,
     DisplayEvents,
+    DisplayOptions,
     Monitor,
     StateManager,
     Versions,
@@ -101,6 +105,8 @@ export {
     // src/util
     GLUtil,
     MathUtil,
+    ObjectUtil,
+    Subset,
 
     // gl-matrix
     math
