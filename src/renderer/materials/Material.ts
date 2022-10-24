@@ -194,8 +194,6 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      */
     public setTexture(texture: Texture, unit: number = 0): void {
         this.textures[unit] = texture;
-
-        console.log(this.textures);
     }
 
     /**
