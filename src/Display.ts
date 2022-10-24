@@ -68,17 +68,17 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
 
         let options: DisplayOptions = <DisplayOptions>{};
 
-        if (typeof widthOrOptions === "number") {
-            options = <DisplayOptions>({
+        if (typeof widthOrOptions === "number" || height || title) {
+            options = <DisplayOptions>{
                 width: <number>widthOrOptions,
                 height,
                 title
-            });
+            };
         } else if (typeof widthOrOptions === "object") {
             options = <DisplayOptions>widthOrOptions;
         }
 
-        ObjectUtil.deepMerge(options, defaultOptions);
+        ObjectUtil.deepMerge(options, defaultOptions, true);
 
         if (!Seraph.isInitialized()) {
             throw new NotInitializedError();
