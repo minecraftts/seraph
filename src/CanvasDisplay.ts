@@ -31,13 +31,14 @@ export default class CanvasDisplay extends Display {
 
         this.material = new Material({
             vertexPath: path.join(Constants.SERAPH_SHADER_DIR, "screen.vsh"),
-            fragmentPath: path.join(Constants.SERAPH_SHADER_DIR, "unlit.fsh")
+            fragmentPath: path.join(Constants.SERAPH_SHADER_DIR, "screen.fsh")
         });
 
         this.screen.setMaterial(this.material);
         this.scene.add(this.screen);
 
         this.texture = new Texture(this.image);
+        this.material.setTexture(this.texture);
 
         this.attachHandlers();
     }
@@ -52,7 +53,6 @@ export default class CanvasDisplay extends Display {
      * Draws the canvas contents to screen and swaps back and front buffers.
      */
     public swapBuffers(): void {
-        this.texture.use();
         this.texture.setImage(this.image);
         this.renderer.draw(this.scene);
 
