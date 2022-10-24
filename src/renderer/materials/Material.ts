@@ -1,6 +1,7 @@
-import { glAttachShader, glCompileShader, glCreateProgram, glCreateShader, glDeleteProgram, glDeleteShader, glGetProgramInfoLog, glGetProgramiv, glGetShaderInfoLog, glGetShaderiv, glGetUniformLocation, glLinkProgram, glShaderSource, glUniform1f, glUniform1i, glUniform2f, glUniform2fv, glUniform3fv, glUniform4f, glUniform4fv, glUniformMatrix4fv, GL_COMPILE_STATUS, GL_FRAGMENT_SHADER, GL_LINK_STATUS, GL_VERTEX_SHADER, Pointer } from "@minecraftts/opengl";
+import { glAttachShader, glCompileShader, glCreateProgram, glCreateShader, glDeleteProgram, glDeleteShader, glGetProgramInfoLog, glGetProgramiv, glGetShaderInfoLog, glGetShaderiv, glGetUniformLocation, glLinkProgram, glShaderSource, glUniform1f, glUniform1i, glUniform2f, glUniform2fv, glUniform3fv, glUniform4f, glUniform4fv, glUniformMatrix4fv, GL_COMPILE_STATUS, GL_FRAGMENT_SHADER, GL_LINK_STATUS, GL_TEXTURE_2D, GL_VERTEX_SHADER, Pointer } from "@minecraftts/opengl";
 import fs from "fs";
 import StateManager from "../../StateManager";
+import Texture from "../textures/Texture";
 import MaterialOptions from "./MaterialOptions";
 import MaterialUniformType from "./MaterialUniformType";
 
@@ -14,6 +15,8 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
 
     private registeredUniforms: Record<keyof T, { type: T[keyof T], loc: number, value?: unknown }>;
     private uniformLocations: Map<string, number> = new Map();
+
+    private textures: Texture[] = new Array(16);
 
     constructor(options: MaterialOptions) {
         if (("vertexSrc" in options) && ("fragmentSrc" in options)) {
@@ -166,7 +169,7 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @param key uniform name
      * @returns `true` if the material has a uniform named by `key`, `false` otherwise
      */
-    public hasUniform(key: string): boolean {
+    public hasUniform<T extends string>(key: T): this is Material<Record<T, MaterialUniformType>> {
         return key in this.registeredUniforms;
     }
 
@@ -181,6 +184,33 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         }
 
         return true;
+    }
+
+    /**
+     * Binds a texture to a specific unit whenever a mesh with this material is drawn
+     * @param texture {Texture} texture to bind
+     * @param unit {number?} optional number specifying the texture unit
+     * @returns {void}
+     */
+    public setTexture(texture: Texture, unit: number = 0): void {
+        this.textures[unit] = texture;
+
+        console.log(this.textures);
+    }
+
+    /**
+     * Binds all current textures
+     * @returns {void}
+     */
+    public bindTextures(): void {
+        for (let i = 0; i < this.textures.length; i++) {
+            const texture = this.textures[i];
+
+            if (texture) {
+                StateManager.setTextureUnit(i);
+                texture.use();
+            }
+        }
     }
 
     /**

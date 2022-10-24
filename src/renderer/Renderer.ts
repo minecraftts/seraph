@@ -1,6 +1,7 @@
-import { glClear, glClearColor, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT } from "@minecraftts/opengl";
+import { glClear, glClearColor, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_TEXTURE_2D } from "@minecraftts/opengl";
 import Camera from "../objects/cameras/Camera";
 import Scene from "../objects/Scene";
+import StateManager from "../StateManager";
 
 export default class Renderer {
     constructor() {
@@ -24,6 +25,12 @@ export default class Renderer {
             if (typeof material !== "undefined") {
                 if (mesh.isTransformDirty()) {
                     mesh.updateTransform();
+                }
+
+                material.bindTextures();
+
+                if (material.hasUniform("tex_bound")) {
+                    material.setUniform("tex_bound", typeof StateManager.getCurrentTexture(GL_TEXTURE_2D) !== "undefined" ? 1 : 0);
                 }
 
                 if (camera && material.hasAllUniforms([ "view_matrix", "model_matrix", "projection_matrix" ])) {
