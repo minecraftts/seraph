@@ -39,6 +39,7 @@ import DrawType from "./objects/meshes/DrawType";
 import ObjectUtil from "./util/ObjectUtil";
 import Subset from "./util/Subset";
 import DisplayOptions from "./DisplayOptions";
+import MeshEvents from "./objects/meshes/MeshEvents";
 
 import glmatrix from "gl-matrix";
 
@@ -81,6 +82,7 @@ export {
     BuildableMesh,
     DrawType,
     Mesh,
+    MeshEvents,
     Plane,
     Screen,
 
