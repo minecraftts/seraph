@@ -1,6 +1,20 @@
-import { glBindBuffer, glBindVertexArray, glBufferData, glDeleteBuffers, glDeleteVertexArrays, glDrawArrays, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glVertexAttribPointer, GL_ARRAY_BUFFER, GL_FLOAT, GL_TRIANGLES } from "@minecraftts/opengl";
+import {
+    GL_ARRAY_BUFFER,
+    GL_FLOAT,
+    GL_TRIANGLES,
+    glBindBuffer,
+    glBindVertexArray,
+    glBufferData,
+    glDeleteBuffers,
+    glDeleteVertexArrays,
+    glDrawArrays,
+    glEnableVertexAttribArray,
+    glGenBuffers,
+    glGenVertexArrays,
+    glVertexAttribPointer
+} from "@minecraftts/opengl";
 import EventEmitter from "events";
-import { mat4, vec3 } from "gl-matrix";
+import {mat4, vec3} from "gl-matrix";
 import TypedEventEmitter from "typed-emitter";
 import DeletedError from "../../errors/DeletedError";
 import BufferAttribute from "../../renderer/BufferAttribute";
@@ -8,6 +22,7 @@ import Material from "../../renderer/materials/Material";
 import GLUtil from "../../util/GLUtil";
 import DrawType from "./DrawType";
 import MeshEvents from "./MeshEvents";
+import MeshType from "./MeshType";
 
 /**
  * Base mesh class
@@ -30,6 +45,7 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
     private modelMatrix: mat4;
 
     private drawType: DrawType;
+    private meshType: MeshType;
 
     public constructor() {
         super();
@@ -51,7 +67,9 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
         this.modelMatrix = mat4.create();
 
         this.transformDirty = true;
+
         this.drawType = DrawType.STATIC;
+        this.meshType = MeshType.TRIANGLES;
     }
 
     /**
@@ -242,7 +260,7 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
             this.emit("pre_draw");
 
             glBindVertexArray(this.vao);
-            glDrawArrays(GL_TRIANGLES, 0, this.vertexCount);
+            glDrawArrays(this.meshType, 0, this.vertexCount);
 
             this.emit("post_draw");
         } 
@@ -256,6 +274,15 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
     public setDrawType(type: DrawType): void {
         this.drawType = type;
         this.updateBuffers();
+    }
+
+    /**
+     * Sets the specified mesh type
+     * @param type {MeshType}
+     * @returns {void}
+     */
+    public setMeshType(type: MeshType): void {
+        this.meshType = type;
     }
 
     /**

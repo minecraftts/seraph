@@ -40,6 +40,7 @@ import ObjectUtil from "./util/ObjectUtil";
 import Subset from "./util/Subset";
 import DisplayOptions from "./DisplayOptions";
 import MeshEvents from "./objects/meshes/MeshEvents";
+import MeshType from "./objects/meshes/MeshType";
 
 import glmatrix from "gl-matrix";
 
@@ -83,6 +84,7 @@ export {
     DrawType,
     Mesh,
     MeshEvents,
+    MeshType,
     Plane,
     Screen,
 
