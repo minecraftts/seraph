@@ -1,15 +1,18 @@
 import { glBindBuffer, glBindVertexArray, glBufferData, glDeleteBuffers, glDeleteVertexArrays, glDrawArrays, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glVertexAttribPointer, GL_ARRAY_BUFFER, GL_FLOAT, GL_TRIANGLES } from "@minecraftts/opengl";
+import EventEmitter from "events";
 import { mat4, vec3 } from "gl-matrix";
+import TypedEventEmitter from "typed-emitter";
 import DeletedError from "../../errors/DeletedError";
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Material from "../../renderer/materials/Material";
 import GLUtil from "../../util/GLUtil";
 import DrawType from "./DrawType";
+import MeshEvents from "./MeshEvents";
 
 /**
  * Base mesh class
  */
-export default class Mesh {
+export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<MeshEvents>){
     private deleted: boolean = false;
     private material?: Material;
 
@@ -29,6 +32,8 @@ export default class Mesh {
     private drawType: DrawType;
 
     public constructor() {
+        super();
+
         const vaoPtr: Uint32Array = new Uint32Array(1);
         const vboPtr: Uint32Array = new Uint32Array(1);
 
@@ -234,8 +239,12 @@ export default class Mesh {
         if (typeof this.material !== "undefined") {
             this.material.use();
 
+            this.emit("pre_draw");
+
             glBindVertexArray(this.vao);
             glDrawArrays(GL_TRIANGLES, 0, this.vertexCount);
+
+            this.emit("post_draw");
         } 
     }
 
