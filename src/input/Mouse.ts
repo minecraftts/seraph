@@ -1,4 +1,24 @@
-import { glfwSetCursorPosCallback, glfwSetMouseButtonCallback, glfwSetScrollCallback, GLFWwindow, GLFW_MOUSE_BUTTON_1, GLFW_MOUSE_BUTTON_2, GLFW_MOUSE_BUTTON_3, GLFW_MOUSE_BUTTON_4, GLFW_MOUSE_BUTTON_5, GLFW_MOUSE_BUTTON_6, GLFW_MOUSE_BUTTON_7, GLFW_MOUSE_BUTTON_8, GLFW_MOUSE_BUTTON_LAST, GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, GLFW_RELEASE } from "@minecraftts/glfw";
+import {
+    glfwSetCursorPosCallback,
+    glfwSetMouseButtonCallback,
+    glfwSetScrollCallback,
+    GLFWwindow,
+    GLFW_MOUSE_BUTTON_1,
+    GLFW_MOUSE_BUTTON_2,
+    GLFW_MOUSE_BUTTON_3,
+    GLFW_MOUSE_BUTTON_4,
+    GLFW_MOUSE_BUTTON_5,
+    GLFW_MOUSE_BUTTON_6,
+    GLFW_MOUSE_BUTTON_7,
+    GLFW_MOUSE_BUTTON_8,
+    GLFW_MOUSE_BUTTON_LAST,
+    GLFW_MOUSE_BUTTON_LEFT,
+    GLFW_MOUSE_BUTTON_MIDDLE,
+    GLFW_MOUSE_BUTTON_RIGHT,
+    GLFW_PRESS,
+    GLFW_RELEASE,
+    glfwGetCursorPos
+} from "@minecraftts/glfw";
 import EventEmitter from "events";
 import TypedEventEmitter from "typed-emitter";
 import MouseEvents from "./MouseEvents";
@@ -60,6 +80,46 @@ export default class Mouse extends (EventEmitter as new () => TypedEventEmitter<
 
     private mouseScrollListener(window: GLFWwindow, xoffset: number, yoffset: number): void {
         this.emit("mouse_scroll", xoffset, yoffset);
+    }
+
+    /**
+     * Returns the mouse cursor's X coordinate
+     * @returns {number} mouse x coordinate
+     */
+    public getMouseX(): number {
+        const xPointer = { $: 0 };
+
+        glfwGetCursorPos(this.window, xPointer, { $: 0 });
+
+        return xPointer.$;
+    }
+
+    /**
+     * Returns the mouse cursor's Y coordinate
+     * @returns {number} mouse y coordinate
+     */
+    public getMouseY(): number {
+        const yPointer = { $: 0 };
+
+        glfwGetCursorPos(this.window, { $: 0 }, yPointer);
+
+        return yPointer.$;
+    }
+
+    /**
+     * @param button the button to check press state for
+     * @returns `true` if the mouse button defined by `button` is currently pressed, `false` otherwise
+     */
+    public getButtonDown(button: number): boolean {
+        return this.mouseStates.has(button);
+    }
+
+    /**
+     * @param button the button to get state for
+     * @returns a `MouseState` if the key defined by `keycode` is currently pressed, `undefined` otherwise
+     */
+    public getButtonState(button: number): MouseState | undefined {
+        return this.mouseStates.get(button);
     }
 
     public static Buttons = class Buttons {

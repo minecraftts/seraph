@@ -1,4 +1,41 @@
-import { GLFWwindow, glfwCreateWindow, glfwWindowHint, GLFW_VISIBLE, GLFW_FALSE, GLFW_FOCUS_ON_SHOW, GLFW_TRUE, GLFW_CONTEXT_VERSION_MAJOR, GLFW_CONTEXT_VERSION_MINOR, glfwMakeContextCurrent, glfwGetWindowSize, Pointer, glfwSetWindowPos, glfwShowWindow, glfwSwapBuffers, glfwPollEvents, glfwWindowShouldClose, glfwSwapInterval, glfwSetWindowSizeCallback, GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE, GLFW_OPENGL_FORWARD_COMPAT, glfwSetFramebufferSizeCallback, glfwSetWindowTitle, glfwSetInputMode, GLFW_CURSOR, GLFW_CURSOR_DISABLED, GLFW_CURSOR_NORMAL, GLFWvidmode, glfwSetWindowMonitor, glfwGetWindowPos, GLFW_DONT_CARE, glfwRawMouseMotionSupported, GLFW_RAW_MOUSE_MOTION, glfwSetWindowShouldClose } from "@minecraftts/glfw";
+import {
+    GLFWwindow,
+    glfwCreateWindow,
+    glfwWindowHint,
+    GLFW_VISIBLE,
+    GLFW_FALSE,
+    GLFW_FOCUS_ON_SHOW,
+    GLFW_TRUE,
+    GLFW_CONTEXT_VERSION_MAJOR,
+    GLFW_CONTEXT_VERSION_MINOR,
+    glfwMakeContextCurrent,
+    glfwGetWindowSize,
+    Pointer,
+    glfwSetWindowPos,
+    glfwShowWindow,
+    glfwSwapBuffers,
+    glfwPollEvents,
+    glfwWindowShouldClose,
+    glfwSwapInterval,
+    glfwSetWindowSizeCallback,
+    GLFW_OPENGL_PROFILE,
+    GLFW_OPENGL_CORE_PROFILE,
+    GLFW_OPENGL_FORWARD_COMPAT,
+    glfwSetFramebufferSizeCallback,
+    glfwSetWindowTitle,
+    glfwSetInputMode,
+    GLFW_CURSOR,
+    GLFW_CURSOR_DISABLED,
+    GLFW_CURSOR_NORMAL,
+    GLFWvidmode,
+    glfwSetWindowMonitor,
+    glfwGetWindowPos,
+    GLFW_DONT_CARE,
+    glfwRawMouseMotionSupported,
+    GLFW_RAW_MOUSE_MOTION,
+    glfwSetWindowShouldClose,
+    glfwSetWindowIcon, GLFWimage
+} from "@minecraftts/glfw";
 import { glewGetErrorString, glewInit, GLEW_OK } from "@minecraftts/opengl/glew";
 import { glViewport } from "@minecraftts/opengl";
 import GlewInitializationError from "./errors/GlewInitializationError";
@@ -16,6 +53,9 @@ import Mouse from "./input/Mouse";
 import DisplayOptions from "./DisplayOptions";
 import ObjectUtil from "./util/ObjectUtil";
 import Subset from "./util/Subset";
+import {BufferedImage, Image} from "@minecraftts/buffered-image";
+import * as fs from "fs";
+import MouseState from "./input/MouseState";
 
 /**
  * Window class
@@ -98,6 +138,10 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
 
         this.window = glfwCreateWindow(options.width, options.height, options.title, null, null);
 
+        if (typeof options.icon !== "undefined") {
+            this.setIcon(options.icon);
+        }
+
         const realWidth: Pointer<number> = { $: 0 };
         const realHeight: Pointer<number> = { $: 0 };
 
@@ -165,6 +209,32 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
      */
     public setTitle(title: string): void {
         glfwSetWindowTitle(this.window, title);
+    }
+
+    /**
+     * @param icon {string | BufferedImage} the path to the icon or a buffered image
+     * @returns {false}
+     */
+    public setIcon(image?: string | BufferedImage): void {
+        if (typeof image !== "undefined") {
+            if (image instanceof BufferedImage) {
+                const iconImage: GLFWimage = {
+                    width: image.getWidth(),
+                    height: image.getHeight(),
+                    pixels: image.getData()
+                };
+
+                glfwSetWindowIcon(this.window, 1, [ iconImage ]);
+            } else {
+                const canvasImage = new Image();
+
+                canvasImage.src = fs.readFileSync(image);
+
+                this.setIcon(new BufferedImage(canvasImage));
+            }
+        } else {
+            glfwSetWindowIcon(this.window, 0, []);
+        }
     }
 
     /**
@@ -273,6 +343,13 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
     }
 
     /**
+     * @returns {Mouse} the mouse object
+     */
+    public getMouse(): Mouse {
+        return this.mouse;
+    }
+
+    /**
      * @param keycode the key to check press state for
      * @returns `true` if the key defined by `keycode` is currently pressed, `false` otherwise 
      */
@@ -286,6 +363,38 @@ export default class Display extends (EventEmitter as new () => TypedEventEmitte
      */
     public getKeyState(keycode: number): KeyState | undefined {
         return this.keyboard.getKeyState(keycode);
+    }
+
+    /**
+     * @param button the button to check press state for
+     * @returns `true` if the mouse button defined by `button` is currently pressed, `false` otherwise
+     */
+    public getMouseButtonDown(button: number): boolean {
+        return this.mouse.getButtonDown(button);
+    }
+
+    /**
+     * @param button the button to get state for
+     * @returns a `MouseState` if the key defined by `keycode` is currently pressed, `undefined` otherwise
+     */
+    public getMouseButtonState(button: number): MouseState | undefined {
+        return this.mouse.getButtonState(button);
+    }
+
+    /**
+     * Returns the mouse cursor's X coordinate
+     * @returns {number} mouse x coordinate
+     */
+    public getMouseX(): number {
+        return this.mouse.getMouseX();
+    }
+
+    /**
+     * Returns the mouse cursor's Y coordinate
+     * @returns {number} mouse y coordinate
+     */
+    public getMouseY(): number {
+        return this.mouse.getMouseY();
     }
 
     /**

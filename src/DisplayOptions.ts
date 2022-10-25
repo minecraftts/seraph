@@ -1,9 +1,12 @@
+import {BufferedImage} from "@minecraftts/buffered-image";
+
 type DisplayOptions = {
     width: number;
     height: number;
     title: string;
     show: boolean;
     focusOnShow: boolean;
+    icon?: BufferedImage | string;
     context: ({
         major: 1;
         minor: 1 | 2 | 3 | 4 | 5;
