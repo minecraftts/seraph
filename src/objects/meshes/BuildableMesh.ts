@@ -10,6 +10,8 @@ export default class BuildableMesh extends Mesh {
     private lastColor: number[];
     private lastUv: number[];
 
+    private buildableIndices: number[];
+
     private editing: boolean;
 
     constructor() {
@@ -21,6 +23,8 @@ export default class BuildableMesh extends Mesh {
 
         this.lastColor = [0, 0, 0, 1];
         this.lastUv = [0, 0];
+
+        this.buildableIndices = [];
 
         this.editing = false;
 
@@ -66,7 +70,7 @@ export default class BuildableMesh extends Mesh {
      * @param a {number} color's alpha value
      * @returns {void}
      */
-    public color(r: number = 0, g: number = 0, b: number = 0, a: number = 0): void {
+    public color(r: number = 0, g: number = 0, b: number = 0, a: number = 1): void {
         if (this.editing) this.lastColor = [ r, g, b, a ];
     }
 
@@ -78,6 +82,15 @@ export default class BuildableMesh extends Mesh {
      */
     public uv(u: number = 0, v: number = 0): void {
         if (this.editing) this.lastUv = [ u, v ];
+    }
+
+    /**
+     * Adds an index to the mesh
+     * @param index {number} vertex index
+     * @returns {void}
+     */
+    public index(index: number): void {
+        if (this.editing) this.buildableIndices.push(index);
     }
 
     /**
@@ -97,6 +110,8 @@ export default class BuildableMesh extends Mesh {
             this.setBufferAttrib("pos", positionBuffer);
             this.setBufferAttrib("color", colorBuffer);
             this.setBufferAttrib("uv", uvBuffer);
+
+            this.setIndices(new Uint32Array(this.buildableIndices));
 
             this.setVertexCount(this.positions.length/3);
             this.updateBuffers();

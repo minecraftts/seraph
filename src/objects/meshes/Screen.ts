@@ -15,7 +15,7 @@ export default class Screen extends Mesh {
         this.height = 0;
 
         this.createBufferAttribs();
-        this.setVertexCount(6);
+        this.setVertexCount(4);
         this.updateBuffers();
     }
 
@@ -24,34 +24,30 @@ export default class Screen extends Mesh {
         const color = new BufferAttribute(1, 3);
         const uvs = new BufferAttribute(2, 2);
 
+        this.setIndices(new Uint32Array([
+            0, 1, 2,
+            1, 3, 2
+        ]));
+
         position.setBuffer(new Float32Array([
             1.0,  1.0,
             1.0, -1.0,
            -1.0,  1.0,
-
-            1.0, -1.0,
            -1.0, -1.0,
-           -1.0, 1.0
         ]));
 
         color.setBuffer(new Float32Array([
             1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,
-
             1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0
         ]));
 
         uvs.setBuffer(new Float32Array([
             1.0, 0.0,
             1.0, 1.0,
             0.0, 0.0,
-            
-            1.0, 1.0,
             0.0, 1.0,
-            0.0, 0.0
         ]));
 
         this.setBufferAttrib("position", position);

@@ -1,13 +1,13 @@
 import {
-    GL_ARRAY_BUFFER,
+    GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER,
     GL_FLOAT,
-    GL_TRIANGLES,
+    GL_TRIANGLES, GL_UNSIGNED_INT,
     glBindBuffer,
     glBindVertexArray,
     glBufferData,
     glDeleteBuffers,
     glDeleteVertexArrays,
-    glDrawArrays,
+    glDrawArrays, glDrawElements,
     glEnableVertexAttribArray,
     glGenBuffers,
     glGenVertexArrays,
@@ -38,6 +38,7 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
 
     private vao: number;
     private vbo: number;
+    private ebo: number;
 
     private vertexCount: number;
     private transformDirty: boolean;
@@ -47,20 +48,24 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
     private drawType: DrawType;
     private meshType: MeshType;
 
+    private indices: Uint32Array;
+
     public constructor() {
         super();
 
         const vaoPtr: Uint32Array = new Uint32Array(1);
-        const vboPtr: Uint32Array = new Uint32Array(1);
+        const bufPtr: Uint32Array = new Uint32Array(2);
 
         glGenVertexArrays(1, vaoPtr);
-        glGenBuffers(1, vboPtr);
+        glGenBuffers(2, bufPtr);
 
         this.position = vec3.create();
         this.rotation = vec3.create();
 
         this.vao = vaoPtr[0];
-        this.vbo = vboPtr[0];
+
+        this.vbo = bufPtr[0];
+        this.ebo = bufPtr[1];
 
         this.vertexCount = 0;
 
@@ -70,6 +75,8 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
 
         this.drawType = DrawType.STATIC;
         this.meshType = MeshType.TRIANGLES;
+
+        this.indices = new Uint32Array(0);
     }
 
     /**
@@ -126,6 +133,9 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
 
         glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer.byteLength, buffer, this.drawType);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this.indices.byteLength, this.indices, this.drawType);
 
         let currentOffset: number = 0;
 
@@ -216,6 +226,7 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
     }
 
     /**
+     * Sets number of unique vertices in the mesh, not the number of indices.
      * @param count the number of vertices this mesh has
      */
     public setVertexCount(count: number): void {
@@ -260,10 +271,24 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
             this.emit("pre_draw");
 
             glBindVertexArray(this.vao);
-            glDrawArrays(this.meshType, 0, this.vertexCount);
+
+            if (this.indices.length > 0) {
+                glDrawElements(this.meshType, this.indices.length, GL_UNSIGNED_INT, 0);
+            } else {
+                glDrawArrays(this.meshType, 0, this.vertexCount);
+            }
 
             this.emit("post_draw");
         } 
+    }
+
+    /**
+     *
+     * @param indices {Uint32Array}
+     * @returns {void}
+     */
+    public setIndices(indices: Uint32Array) {
+        this.indices = indices;
     }
 
     /**
