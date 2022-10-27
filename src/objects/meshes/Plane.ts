@@ -20,14 +20,14 @@ export default class Plane extends Mesh {
 
         this.setIndices(new Uint32Array([
             0, 1, 2,
-            1, 3, 2
+            2, 3, 1
         ]));
 
         position.setBuffer(new Float32Array([
-            0.5, 0.0,  0.5,
-            0.5, 0.0, -0.5,
-           -0.5, 0.0,  0.5,
-           -0.5, 0.0, -0.5,
+            -0.5, 0.0,  0.5,
+            -0.5, 0.0, -0.5,
+             0.5, 0.0, -0.5,
+             0.5, 0.0,  0.5
         ]));
 
         color.setBuffer(new Float32Array([

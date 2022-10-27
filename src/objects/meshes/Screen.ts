@@ -26,14 +26,14 @@ export default class Screen extends Mesh {
 
         this.setIndices(new Uint32Array([
             0, 1, 2,
-            1, 3, 2
+            2, 3, 0
         ]));
 
         position.setBuffer(new Float32Array([
-            1.0,  1.0,
-            1.0, -1.0,
-           -1.0,  1.0,
-           -1.0, -1.0,
+            -1.0,  1.0,
+            -1.0, -1.0,
+             1.0, -1.0,
+             1.0,  1.0
         ]));
 
         color.setBuffer(new Float32Array([
