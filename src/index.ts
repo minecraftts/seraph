@@ -41,6 +41,9 @@ import Subset from "./util/Subset";
 import DisplayOptions from "./DisplayOptions";
 import MeshEvents from "./objects/meshes/MeshEvents";
 import MeshType from "./objects/meshes/MeshType";
+import VertexOrder from "./renderer/materials/VertexOrder";
+import MaterialSourceOptions from "./renderer/materials/MaterialSourceOptions";
+import CullFace from "./renderer/materials/CullFace";
 
 import glmatrix from "gl-matrix";
 
@@ -92,10 +95,13 @@ export {
     Scene,
 
     // src/renderer/materials
+    CullFace,
     Material,
     MaterialOptions,
+    MaterialSourceOptions,
     MaterialUniformType,
     UnlitMaterial,
+    VertexOrder,
 
     // src/renderer/textures
     Texture,

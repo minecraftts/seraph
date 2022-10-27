@@ -1,24 +1,55 @@
-import { glAttachShader, glCompileShader, glCreateProgram, glCreateShader, glDeleteProgram, glDeleteShader, glGetProgramInfoLog, glGetProgramiv, glGetShaderInfoLog, glGetShaderiv, glGetUniformLocation, glLinkProgram, glShaderSource, glUniform1f, glUniform1i, glUniform2f, glUniform2fv, glUniform3fv, glUniform4f, glUniform4fv, glUniformMatrix4fv, GL_COMPILE_STATUS, GL_FRAGMENT_SHADER, GL_LINK_STATUS, GL_TEXTURE_2D, GL_VERTEX_SHADER, Pointer } from "@minecraftts/opengl";
+import {
+    GL_COMPILE_STATUS, GL_CULL_FACE, GL_DEPTH_TEST,
+    GL_FRAGMENT_SHADER,
+    GL_LINK_STATUS,
+    GL_VERTEX_SHADER,
+    glAttachShader,
+    glCompileShader,
+    glCreateProgram,
+    glCreateShader, glCullFace,
+    glDeleteProgram,
+    glDeleteShader, glDepthMask, glDisable, glEnable, glFrontFace,
+    glGetProgramInfoLog,
+    glGetProgramiv,
+    glGetShaderInfoLog,
+    glGetShaderiv,
+    glGetUniformLocation,
+    glLinkProgram,
+    glShaderSource,
+    glUniform1f,
+    glUniform1i,
+    glUniform2fv,
+    glUniform3fv,
+    glUniform4fv,
+    glUniformMatrix4fv,
+    Pointer
+} from "@minecraftts/opengl";
 import fs from "fs";
 import StateManager from "../../StateManager";
 import Texture from "../textures/Texture";
 import MaterialOptions from "./MaterialOptions";
 import MaterialUniformType from "./MaterialUniformType";
+import MaterialSourceOptions from "./MaterialSourceOptions";
+import Subset from "../../util/Subset";
+import ObjectUtil from "../../util/ObjectUtil";
+import CullFace from "./CullFace";
+import VertexOrder from "./VertexOrder";
 
 /**
  * Base material class
  */
-export default class Material<T extends Record<string, MaterialUniformType> = {}> {
+export default class Material<T extends Record<string, MaterialUniformType> = {}, O extends {} = {}> {
     private vertexSrc: string;
     private fragmentSrc: string;
     private program: number = -1;
 
     private registeredUniforms: Record<keyof T, { type: T[keyof T], loc: number, value?: unknown }>;
-    private uniformLocations: Map<string, number> = new Map();
 
     private textures: Texture[] = new Array(16);
 
-    constructor(options: MaterialOptions) {
+    protected options: MaterialOptions & O = <any>{};
+
+    constructor(options: MaterialSourceOptions & Subset<MaterialOptions> & Subset<O>, defaultOptions: O & Subset<MaterialOptions> = <O>{}) {
         if (("vertexSrc" in options) && ("fragmentSrc" in options)) {
             this.vertexSrc = options.vertexSrc;
             this.fragmentSrc = options.fragmentSrc;
@@ -32,6 +63,20 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         } else {
             throw new Error("expected either vertexPath and fragmentPath or vertexSrc and fragmentSrc to be present in options, found none");
         }
+
+        const defaultMaterialOptions: MaterialOptions = {
+            cullFace: CullFace.BACK,
+            vertexOrder: VertexOrder.COUNTER_CLOCKWISE,
+
+            writeDepth: true,
+            ignoreDepth: false,
+            faceCulling: true
+        };
+
+        ObjectUtil.deepMerge(defaultOptions, defaultMaterialOptions, true);
+        ObjectUtil.deepMerge(options, defaultOptions, true);
+
+        this.options = <MaterialOptions & O><unknown>options;
 
         this.registeredUniforms = <typeof this.registeredUniforms>{};
         this.compile();
@@ -216,5 +261,21 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      */
     public use(): void {
         StateManager.useProgram(this.program);
+
+        if (this.options.faceCulling) {
+            glEnable(GL_CULL_FACE);
+        } else {
+            glDisable(GL_CULL_FACE);
+        }
+
+        if (this.options.ignoreDepth) {
+            glDisable(GL_DEPTH_TEST);
+        } else {
+            glDepthMask(this.options.writeDepth);
+            glEnable(GL_DEPTH_TEST);
+        }
+
+        glCullFace(this.options.cullFace);
+        glFrontFace(this.options.vertexOrder);
     }
 }
