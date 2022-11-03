@@ -44,10 +44,10 @@ export default class Screen extends Mesh {
         ]));
 
         uvs.setBuffer(new Float32Array([
-            1.0, 0.0,
-            1.0, 1.0,
             0.0, 0.0,
             0.0, 1.0,
+            1.0, 1.0,
+            1.0, 0.0
         ]));
 
         this.setBufferAttrib("position", position);
