@@ -137,11 +137,7 @@ export default class BuildableMesh extends Mesh {
             this.setBufferAttrib("color", colorBuffer);
             this.setBufferAttrib("uv", uvBuffer);
 
-            console.log(this.buildableIndices);
-
             this.setIndices(new Uint32Array(this.buildableIndices));
-
-            console.log(this.positionElements, this.positions.length / this.positionElements);
 
             this.setVertexCount(this.positions.length / this.positionElements);
             this.updateBuffers();
