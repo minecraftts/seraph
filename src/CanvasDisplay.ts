@@ -19,6 +19,7 @@ export default class CanvasDisplay extends Display {
     private renderer: Renderer;
     private screen: Screen;
     private material: Material;
+    private deferredRenders: (() => void)[];
 
     constructor(width?: number, height?: number, title: string = "Seraph Canvas") {
         super(width, height, title);
@@ -40,13 +41,19 @@ export default class CanvasDisplay extends Display {
         this.texture = new Texture(this.image);
         this.material.setTexture(this.texture);
 
+        this.deferredRenders = [];
+
         this.attachHandlers();
     }
 
     private attachHandlers(): void {
-        this.on("resize", (width, height, ratio) => {
+        this.on("resize", (width, height) => {
             this.image = new BufferedImage(width, height);
         });
+    }
+
+    public deferRender(call: () => void) {
+        this.deferredRenders.push(call);
     }
 
     /**
@@ -55,6 +62,9 @@ export default class CanvasDisplay extends Display {
     public swapBuffers(): void {
         this.texture.setImage(this.image);
         this.renderer.draw(this.scene);
+
+        this.deferredRenders.forEach(call => call());
+        this.deferredRenders = [];
 
         super.swapBuffers();
     }
