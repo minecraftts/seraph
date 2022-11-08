@@ -5,14 +5,8 @@ import Mesh from "./Mesh";
  * Mesh representing a full-size 2d screen
  */
 export default class Screen extends Mesh {
-    private width: number;
-    private height: number;
-
     constructor() {
         super();
-
-        this.width = 0;
-        this.height = 0;
 
         this.createBufferAttribs();
         this.setVertexCount(4);
@@ -53,17 +47,5 @@ export default class Screen extends Mesh {
         this.setBufferAttrib("position", position);
         this.setBufferAttrib("color", color);
         this.setBufferAttrib("uvs", uvs);
-    }
-
-    public setWidth(width: number): void {
-        this.width = width;
-        this.createBufferAttribs();
-        this.updateBuffers();
-    }
-
-    public setHeight(height: number): void {
-        this.height = height;
-        this.createBufferAttribs();
-        this.updateBuffers();
     }
 }
