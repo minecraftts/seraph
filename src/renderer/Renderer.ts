@@ -11,9 +11,12 @@ export default class Renderer {
     /**
      * @param scene the scene to draw
      * @param camera an optional camera to draw the scene from
+     * @param clear
      */
-    public draw(scene: Scene, camera?: Camera) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    public draw(scene: Scene, camera?: Camera, clear: boolean = true) {
+        if (clear) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
 
         if (camera && camera.isDirty()) {
             camera.update();
