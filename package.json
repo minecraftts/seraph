@@ -31,7 +31,7 @@
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "@minecraftts/buffered-image": "^1.0.0",
+    "@minecraftts/buffered-image": "^1.1.0",
     "@minecraftts/glfw": "^2.0.1",
     "@minecraftts/opengl": "^2.0.1",
     "canvas": "^2.10.1",
