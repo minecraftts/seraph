@@ -3,7 +3,7 @@ import DrawType from "./DrawType";
 import Mesh from "./Mesh";
 
 export default class BuildableMesh extends Mesh {
-    private positionElements: 2 | 3 | 4;
+    private readonly positionElements: 2 | 3 | 4;
 
     private positions: number[];
     private colors: number[];
@@ -40,6 +40,7 @@ export default class BuildableMesh extends Mesh {
      * @returns {BuildableMesh}
      */
     public begin(): BuildableMesh {
+        this.buildableIndices = [];
         this.positions = [];
         this.colors = [];
         this.uvs = [];
