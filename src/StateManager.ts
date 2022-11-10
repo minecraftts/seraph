@@ -1,5 +1,5 @@
 import { glfwSwapInterval } from "@minecraftts/glfw";
-import { glBindTexture, glUseProgram } from "@minecraftts/opengl";
+import { GL_FRAMEBUFFER, glBindFramebuffer, glBindTexture, glUseProgram } from "@minecraftts/opengl";
 
 /**
  * General utility class to manage the OpenGL state
@@ -19,6 +19,15 @@ export default class StateManager {
         }
 
         glUseProgram(program);
+
+        this.currentProgram = program;
+    }
+
+    /**
+     * Returns current active program
+     */
+    public static getProgram(): number {
+        return this.currentProgram;
     }
 
     /**
@@ -58,5 +67,9 @@ export default class StateManager {
 
     public static setTextureUnit(unit: number): void {
 
+    }
+
+    public static unbindFramebuffer(): void {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
