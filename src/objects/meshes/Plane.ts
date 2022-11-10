@@ -9,7 +9,7 @@ export default class Plane extends Mesh {
         super();
 
         this.createBufferAttribs();
-        this.setVertexCount(6);
+        this.setVertexCount(4);
         this.updateBuffers();
     }
 
@@ -20,7 +20,7 @@ export default class Plane extends Mesh {
 
         this.setIndices(new Uint32Array([
             0, 1, 2,
-            2, 3, 1
+            2, 3, 0
         ]));
 
         position.setBuffer(new Float32Array([
