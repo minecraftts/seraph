@@ -60,4 +60,8 @@ export default class Texture {
     public getHeight(): number {
         return this.height;
     }
+
+    public getInternal(): number {
+        return this.texture;
+    }
 }
