@@ -44,6 +44,7 @@ import MeshType from "./objects/meshes/MeshType";
 import VertexOrder from "./renderer/materials/VertexOrder";
 import MaterialSourceOptions from "./renderer/materials/MaterialSourceOptions";
 import CullFace from "./renderer/materials/CullFace";
+import Framebuffer from "./renderer/Framebuffer";
 
 import glmatrix from "gl-matrix";
 
@@ -110,6 +111,7 @@ export {
     // src/renderer
     BufferAttribTypes,
     BufferAttribute,
+    Framebuffer,
     Renderer,
 
     // src/util
