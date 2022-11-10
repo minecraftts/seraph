@@ -39,13 +39,16 @@ import VertexOrder from "./VertexOrder";
  * Base material class
  */
 export default class Material<T extends Record<string, MaterialUniformType> = {}, O extends {} = {}> {
-    private vertexSrc: string;
-    private fragmentSrc: string;
+    private readonly vertexSrc: string;
+    private readonly fragmentSrc: string;
+
+    private readonly registeredUniforms: Record<keyof T, { type: T[keyof T], loc: number, value?: unknown }>;
+
     private program: number = -1;
 
-    private registeredUniforms: Record<keyof T, { type: T[keyof T], loc: number, value?: unknown }>;
-
     private textures: Texture[] = new Array(16);
+
+    private deferredSets: { uniform: string, value: unknown }[] = [];
 
     protected options: MaterialOptions & O = <any>{};
 
@@ -172,6 +175,11 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      */
     public setUniform(key: keyof T, value: unknown): void {
         if (key in this.registeredUniforms) {
+            if (StateManager.getProgram() !== this.program) {
+                this.deferredSets.push({ uniform: <never>key, value });
+                return;
+            }
+
             const {
                 type,
                 loc
@@ -261,6 +269,12 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      */
     public use(): void {
         StateManager.useProgram(this.program);
+
+        this.deferredSets.forEach(set => {
+            this.setUniform(set.uniform, set.value);
+        });
+
+        this.deferredSets = [];
 
         if (this.options.faceCulling) {
             glEnable(GL_CULL_FACE);
