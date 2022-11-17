@@ -11,13 +11,15 @@ export default class PerspectiveCamera extends Camera {
 
     private frustum: mat4;
 
-    constructor() {
+    constructor(fov: number = MathUtil.degreesToRad(70), near = 0.1, far = 1000) {
         super();
 
-        this.fov = MathUtil.degreesToRad(70);
+        this.fov = fov;
         this.aspect = 0;
-        this.far = 1000;
-        this.near = 0.1;
+
+        this.near = near;
+        this.far = far;
+
         this.frustum = mat4.create();
     }
 
@@ -28,8 +30,40 @@ export default class PerspectiveCamera extends Camera {
     /**
      * @param ratio the new aspect ratio
      */
-    public setAspectRatio(ratio: number): void {
+    public setAspectRatio(ratio: number): PerspectiveCamera {
         this.aspect = ratio;
         this.projectionDirty = true;
+
+        return this;
+    }
+
+    /**
+     * @param fov new fov
+     */
+    public setFov(fov: number): PerspectiveCamera {
+        this.fov = fov;
+        this.projectionDirty = true;
+
+        return this;
+    }
+
+    /**
+     * @param far far clipping plane
+     */
+    public setFar(far: number): PerspectiveCamera {
+        this.far = far;
+        this.projectionDirty = true;
+
+        return this;
+    }
+
+    /**
+     * @param near near clipping plane
+     */
+    public setNear(near: number): PerspectiveCamera {
+        this.near = near;
+        this.projectionDirty = true;
+
+        return this;
     }
 }

@@ -20,6 +20,7 @@ import DeletedError from "../../errors/DeletedError";
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Material from "../../renderer/materials/Material";
 import GLUtil from "../../util/GLUtil";
+import Object3D from "../Object3D";
 import DrawType from "./DrawType";
 import MeshEvents from "./MeshEvents";
 import MeshType from "./MeshType";
@@ -27,21 +28,17 @@ import MeshType from "./MeshType";
 /**
  * Base mesh class
  */
-export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<MeshEvents>){
+export default class Mesh extends Object3D<MeshEvents> {
     private deleted: boolean = false;
     private material?: Material;
 
     private bufferAttribs: Record<string, BufferAttribute> = {};
-
-    private position: vec3;
-    private rotation: vec3;
 
     private vao: number;
     private vbo: number;
     private ebo: number;
 
     private vertexCount: number;
-    private transformDirty: boolean;
 
     private modelMatrix: mat4;
 
@@ -149,73 +146,6 @@ export default class Mesh extends (EventEmitter as new () => TypedEventEmitter<M
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-    /**
-     * @param x mesh x coord
-     * @param y mesh y coord
-     * @param z mesh z coord
-     */
-    public setPosition(x: number, y: number = 0, z: number = 0): void {
-        this.position[0] = x;
-        this.position[1] = y;
-        this.position[2] = z;
-
-        this.transformDirty = true;
-    }
-
-    /**
-     * @param x rotation x axis 
-     * @param y rotation y axis
-     * @param z rotation z axis
-     */
-    public setRotation(x: number, y: number = 0, z: number = 0): void {
-        this.rotation[0] = x;
-        this.rotation[1] = y;
-        this.rotation[2] = z;
-
-        this.transformDirty = true;
-    }
-
-    /**
-     * @param x x axis to rotate by
-     * @param y y axis to rotate by
-     * @param z z axis to rotate by
-     */
-    public rotate(x: number, y: number = 0, z: number = 0): void {
-        const newRotation = vec3.create();
-
-        newRotation[0] = x;
-        newRotation[1] = y;
-        newRotation[2] = z;
-
-        vec3.add(this.rotation, this.rotation, newRotation);
-
-        this.transformDirty = true;
-    }
-
-    /**
-     * @param x x coord to move mesh by
-     * @param y y coord to move mesh by
-     * @param z z coord to move mesh by
-     */
-    public move(x: number, y: number = 0, z: number = 0): void {
-        const newPosition = vec3.create();
-
-        newPosition[0] = x;
-        newPosition[1] = y;
-        newPosition[2] = z;
-
-        vec3.add(this.position, this.position, newPosition);
-
-        this.transformDirty = true;
-    }
-
-    /**
-     * @returns `true` if the transformation matrix needs to be updated, `false` otherwise
-     */
-    public isTransformDirty(): boolean {
-        return this.transformDirty;
     }
 
     /**

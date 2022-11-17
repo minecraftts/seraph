@@ -1,7 +1,7 @@
 import { mat4, vec3 } from "gl-matrix";
-import NotImplementedError from "../../errors/NotImplementedError";
+import Object3D from "../Object3D";
 
-export default abstract class Camera {
+export default abstract class Camera extends Object3D {
     protected position: vec3;
     protected rotation: vec3;
     protected rotationPoint: vec3;
@@ -9,48 +9,18 @@ export default abstract class Camera {
     protected viewMatrix: mat4;
     protected projectionMatrix: mat4;
 
-    protected viewDirty: boolean;
     protected projectionDirty: boolean;
 
-    constructor() {
+    protected constructor() {
+        super();
+
         this.projectionMatrix = mat4.create();
         this.viewMatrix = mat4.create();
         this.position = vec3.create();
         this.rotation = vec3.create();
         this.rotationPoint = vec3.create();
 
-        this.viewDirty = true;
         this.projectionDirty = true;
-    }
-
-    /**
-     * @param x camera x coord
-     * @param y camera y coord
-     * @param z camera z coord
-     */
-    public setPosition(x: number, y: number, z: number): void {
-        this.position[0] = x;
-        this.position[1] = y;
-        this.position[2] = z;
-
-        this.viewDirty = true;
-    }
-
-    /**
-     * @param x x axis to rotate by
-     * @param y y axis to rotate by
-     * @param z z axis to rotate by
-     */
-    public rotate(x: number, y: number = 0, z: number = 0): void {
-        const newRotation = vec3.create();
-
-        newRotation[0] = x;
-        newRotation[1] = y;
-        newRotation[2] = z;
-
-        vec3.add(this.rotation, this.rotation, newRotation);
-
-        this.viewDirty = true;
     }
 
     protected abstract updateProjectionMatrix(): void;
@@ -93,14 +63,14 @@ export default abstract class Camera {
      * @returns `true` if the view matrix or projection matrix needs to be updated, `false` otherwise 
      */
     public isDirty(): boolean {
-        return this.viewDirty || this.projectionDirty;
+        return this.transformDirty || this.projectionDirty;
     }
 
     /**
      * @returns `true` if the view matrix needs to be updated, `false` otherwise
      */
     public isViewDirty(): boolean {
-        return this.viewDirty;
+        return this.isTransformDirty();
     }
 
     /**
@@ -114,10 +84,10 @@ export default abstract class Camera {
      * Updates the view and or projection matrix if they need to be updated.
      */
     public update(): void {
-        if (this.viewDirty) this.updateViewMatrix();
+        if (this.transformDirty) this.updateViewMatrix();
         if (this.projectionDirty && this instanceof Camera) this.updateProjectionMatrix();
 
-        this.viewDirty = false;
+        this.transformDirty = false;
         this.projectionDirty = false;
     }
 }

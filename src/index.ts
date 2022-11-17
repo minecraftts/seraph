@@ -45,8 +45,10 @@ import VertexOrder from "./renderer/materials/VertexOrder";
 import MaterialSourceOptions from "./renderer/materials/MaterialSourceOptions";
 import CullFace from "./renderer/materials/CullFace";
 import Framebuffer from "./renderer/Framebuffer";
+import Object3D from "./objects/Object3D";
 
 import glmatrix from "gl-matrix";
+
 
 const math = {
     ...glmatrix
@@ -93,6 +95,7 @@ export {
     Screen,
 
     // src/objects
+    Object3D,
     Scene,
 
     // src/renderer/materials
