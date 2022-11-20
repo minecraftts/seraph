@@ -277,19 +277,19 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
         this.deferredSets = [];
 
         if (this.options.faceCulling) {
-            glEnable(GL_CULL_FACE);
+            StateManager.enable(GL_CULL_FACE);
         } else {
-            glDisable(GL_CULL_FACE);
+            StateManager.disable(GL_CULL_FACE);
         }
 
         if (this.options.ignoreDepth) {
-            glDisable(GL_DEPTH_TEST);
+            StateManager.disable(GL_DEPTH_TEST);
         } else {
-            glDepthMask(this.options.writeDepth);
-            glEnable(GL_DEPTH_TEST);
+            StateManager.setDepthMask(this.options.writeDepth);
+            StateManager.enable(GL_DEPTH_TEST);
         }
 
-        glCullFace(this.options.cullFace);
-        glFrontFace(this.options.vertexOrder);
+        StateManager.setCullFace(this.options.cullFace);
+        StateManager.setFaceDirection(this.options.vertexOrder);
     }
 }

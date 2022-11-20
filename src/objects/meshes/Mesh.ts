@@ -19,6 +19,7 @@ import TypedEventEmitter from "typed-emitter";
 import DeletedError from "../../errors/DeletedError";
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Material from "../../renderer/materials/Material";
+import StateManager from "../../StateManager";
 import GLUtil from "../../util/GLUtil";
 import Object3D from "../Object3D";
 import DrawType from "./DrawType";
@@ -126,12 +127,12 @@ export default class Mesh extends Object3D<MeshEvents> {
             offset = originalOffset + width;
         });
 
-        glBindVertexArray(this.vao);
+        StateManager.bindVertexArray(this.vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
+        StateManager.bindBuffer(GL_ARRAY_BUFFER, this.vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer.byteLength, buffer, this.drawType);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ebo);
+        StateManager.bindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, this.indices.byteLength, this.indices, this.drawType);
 
         let currentOffset: number = 0;
@@ -139,13 +140,13 @@ export default class Mesh extends Object3D<MeshEvents> {
         for (const attrib of attribArray) {
             const width: number = attrib.getWidth();
 
-            glVertexAttribPointer(attrib.getPosition(), width, GL_FLOAT, attrib.isNormalized(), stride * GLUtil.bufferAttribWidth(GL_FLOAT), currentOffset);
-            glEnableVertexAttribArray(attrib.getPosition());
+            StateManager.setVertexAttribPointer(attrib.getPosition(), width, GL_FLOAT, attrib.isNormalized(), stride * GLUtil.bufferAttribWidth(GL_FLOAT), currentOffset);
+            StateManager.enableVertexAttrib(attrib.getPosition());
 
             currentOffset += width * GLUtil.bufferAttribWidth(GL_FLOAT);
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        StateManager.bindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     /**
@@ -200,7 +201,7 @@ export default class Mesh extends Object3D<MeshEvents> {
 
             this.emit("pre_draw");
 
-            glBindVertexArray(this.vao);
+            StateManager.bindVertexArray(this.vao);
 
             if (this.indices.length > 0) {
                 glDrawElements(this.meshType, this.indices.length, GL_UNSIGNED_INT, 0);
