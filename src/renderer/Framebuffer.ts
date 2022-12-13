@@ -81,7 +81,7 @@ export default class Framebuffer {
 
         this.fbo = fboPtr[0];
 
-        StateManager.bindFramebuffer(this.fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
 
         const texturePtr = new Uint32Array(1);
 
@@ -89,11 +89,11 @@ export default class Framebuffer {
 
         this.texture = texturePtr[0];
 
-        StateManager.bindBuffer(GL_TEXTURE_2D, this.texture);
+        glBindTexture(GL_TEXTURE_2D, this.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this.width, this.height, 0, GL_RGB, GL_UNSIGNED_BYTE, new Uint8Array(0));
         StateManager.setTextureParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         StateManager.setTextureParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        StateManager.bindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.texture, 0);
 
@@ -113,7 +113,7 @@ export default class Framebuffer {
             throw new Error("failed to create framebuffer");
         }
 
-        StateManager.unbindFramebuffer();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public recreate(): void {
@@ -126,13 +126,13 @@ export default class Framebuffer {
 
     public bind(): void {
         if (this.fbo !== -1) {
-            StateManager.bindFramebuffer(this.fbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
         }
     }
 
     public bindTexture(): void {
         if (this.texture !== -1) {
-            StateManager.bindTexture(GL_TEXTURE_2D, this.texture);
+            glBindTexture(GL_TEXTURE_2D, this.texture);
         }
     }
 
