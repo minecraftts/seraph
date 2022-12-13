@@ -26,6 +26,7 @@ import {
 } from "@minecraftts/opengl";
 import fs from "fs";
 import StateManager from "../../StateManager";
+import Paths from "../../util/Paths";
 import Texture from "../textures/Texture";
 import MaterialOptions from "./MaterialOptions";
 import MaterialUniformType from "./MaterialUniformType";
@@ -262,6 +263,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
                 texture.use();
             }
         }
+    }
+
+    public option<K extends Paths<MaterialOptions & O>>(key: K, value: (MaterialOptions & O)[K]): void {
+        this.options[key] = value;
     }
 
     /**
