@@ -1,6 +1,6 @@
 {
   "name": "@minecraftts/seraph",
-  "version": "0.4.1",
+  "version": "0.4.4",
   "description": "Rendering engine supporting MinecraftTS",
   "main": "build/index.js",
   "scripts": {
