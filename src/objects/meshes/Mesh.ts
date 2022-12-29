@@ -1,7 +1,7 @@
 import {
     GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER,
     GL_FLOAT,
-    GL_TRIANGLES, GL_UNSIGNED_INT,
+    GL_UNSIGNED_INT,
     glBindBuffer,
     glBindVertexArray,
     glBufferData,
@@ -13,13 +13,12 @@ import {
     glGenVertexArrays,
     glVertexAttribPointer
 } from "@minecraftts/opengl";
-import EventEmitter from "events";
 import {mat4, vec3} from "gl-matrix";
-import TypedEventEmitter from "typed-emitter";
 import DeletedError from "../../errors/DeletedError";
 import BufferAttribute from "../../renderer/BufferAttribute";
 import Material from "../../renderer/materials/Material";
 import GLUtil from "../../util/GLUtil";
+import IDeletable from "../../util/IDeletable";
 import Object3D from "../Object3D";
 import DrawType from "./DrawType";
 import MeshEvents from "./MeshEvents";
@@ -28,15 +27,14 @@ import MeshType from "./MeshType";
 /**
  * Base mesh class
  */
-export default class Mesh extends Object3D<MeshEvents> {
-    private deleted: boolean = false;
+export default class Mesh extends Object3D<MeshEvents> implements IDeletable {
     private material?: Material;
 
     private bufferAttribs: Record<string, BufferAttribute> = {};
 
-    private vao: number;
-    private vbo: number;
-    private ebo: number;
+    private readonly vao: number;
+    private readonly vbo: number;
+    private readonly ebo: number;
 
     private vertexCount: number;
 
@@ -46,6 +44,8 @@ export default class Mesh extends Object3D<MeshEvents> {
     private meshType: MeshType;
 
     private indices: Uint32Array;
+
+    public deleted: boolean = false;
 
     public constructor() {
         super();
@@ -74,6 +74,17 @@ export default class Mesh extends Object3D<MeshEvents> {
         this.meshType = MeshType.TRIANGLES;
 
         this.indices = new Uint32Array(0);
+    }
+
+    public delete(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
+        glDeleteVertexArrays(1, new Uint32Array([ this.vao ]));
+        glDeleteBuffers(2, new Uint32Array([ this.vbo, this.ebo ]));
+
+        this.deleted = true;
     }
 
     /**
@@ -152,6 +163,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @param material the material this mesh should use 
      */
     public setMaterial(material: Material): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.material = material;
     }
 
@@ -160,6 +175,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @param count the number of vertices this mesh has
      */
     public setVertexCount(count: number): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.vertexCount = count;
     }
 
@@ -167,6 +186,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @returns the material currently being used by this mesh 
      */
     public getMaterial(): Material | undefined {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         return this.material;
     }
 
@@ -174,6 +197,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * Updates the mesh's transformation matrix
      */
     public updateTransform(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.modelMatrix = mat4.create();
         
         mat4.rotateX(this.modelMatrix, this.modelMatrix, this.rotation[0]);
@@ -188,6 +215,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @returns the mesh's model matrix
      */
     public getModelMatrix(): mat4 {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         return this.modelMatrix;
     }
 
@@ -195,6 +226,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * Bind the material and draw the mesh's geometry
      */
     public draw(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         if (typeof this.material !== "undefined") {
             this.material.use();
 
@@ -218,6 +253,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @returns {void}
      */
     public setIndices(indices: Uint32Array) {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.indices = indices;
     }
 
@@ -227,6 +266,10 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @returns {void}
      */
     public setDrawType(type: DrawType): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.drawType = type;
         this.updateBuffers();
     }
@@ -237,16 +280,17 @@ export default class Mesh extends Object3D<MeshEvents> {
      * @returns {void}
      */
     public setMeshType(type: MeshType): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.meshType = type;
     }
 
     /**
-     * Free any resources used by this mesh
+     * @deprecated
      */
     public cleanup(): void {
-        glDeleteVertexArrays(1, new Uint32Array(this.vao));
-        glDeleteBuffers(1, new Uint32Array(this.vbo));
-
-        this.deleted = true;
+        this.delete();
     }
 }

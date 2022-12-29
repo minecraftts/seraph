@@ -1,8 +1,7 @@
 import {
     GL_COMPILE_STATUS, GL_CULL_FACE, GL_DEPTH_TEST,
     GL_FRAGMENT_SHADER,
-    GL_LINK_STATUS,
-    GL_VERTEX_SHADER,
+    GL_LINK_STATUS, GL_VERTEX_SHADER,
     glAttachShader,
     glCompileShader,
     glCreateProgram,
@@ -25,7 +24,9 @@ import {
     Pointer
 } from "@minecraftts/opengl";
 import fs from "fs";
+import DeletedError from "../../errors/DeletedError";
 import StateManager from "../../StateManager";
+import IDeletable from "../../util/IDeletable";
 import Paths from "../../util/Paths";
 import Texture from "../textures/Texture";
 import MaterialOptions from "./MaterialOptions";
@@ -39,19 +40,19 @@ import VertexOrder from "./VertexOrder";
 /**
  * Base material class
  */
-export default class Material<T extends Record<string, MaterialUniformType> = {}, O extends {} = {}> {
+export default class Material<T extends Record<string, MaterialUniformType> = {}, O extends {} = {}> implements IDeletable {
     private readonly vertexSrc: string;
     private readonly fragmentSrc: string;
 
     private readonly registeredUniforms: Record<keyof T, { type: T[keyof T], loc: number, value?: unknown }>;
 
     private program: number = -1;
-
     private textures: Texture[] = new Array(16);
-
     private deferredSets: { uniform: string, value: unknown }[] = [];
 
     protected options: MaterialOptions & O = <any>{};
+
+    public deleted: boolean = false;
 
     constructor(options: MaterialSourceOptions & Subset<MaterialOptions> & Subset<O>, defaultOptions: O & Subset<MaterialOptions> = <O>{}) {
         if (("vertexSrc" in options) && ("fragmentSrc" in options)) {
@@ -92,6 +93,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @param type uniform type
      */
     protected registerUniform(key: keyof T, type: T[keyof T]): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         const location = glGetUniformLocation(this.program, <string>key);
 
         if (location === -1) {
@@ -110,6 +115,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * Compiles the material
      */
     public compile(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         const vertexShader: number = glCreateShader(GL_VERTEX_SHADER);
         const fragmentShader: number = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -175,6 +184,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @param value uniform value
      */
     public setUniform(key: keyof T, value: unknown): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         if (key in this.registeredUniforms) {
             if (StateManager.getProgram() !== this.program) {
                 this.deferredSets.push({ uniform: <never>key, value });
@@ -224,6 +237,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @returns `true` if the material has a uniform named by `key`, `false` otherwise
      */
     public hasUniform<T extends string>(key: T): this is Material<Record<T, MaterialUniformType>> {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         return key in this.registeredUniforms;
     }
 
@@ -233,6 +250,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @returns `true` if the material has all the uniforms specified by `keys`, `false` otherwise
      */
     public hasAllUniforms(keys: string[]): this is Material<Record<typeof keys[number], MaterialUniformType>> {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         for (const key of keys) {
             if (!(key in this.registeredUniforms)) return false;
         }
@@ -247,6 +268,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @returns {void}
      */
     public setTexture(texture: Texture, unit: number = 0): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.textures[unit] = texture;
     }
 
@@ -255,6 +280,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * @returns {void}
      */
     public bindTextures(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         for (let i = 0; i < this.textures.length; i++) {
             const texture = this.textures[i];
 
@@ -266,6 +295,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
     }
 
     public option<K extends Paths<MaterialOptions & O>>(key: K, value: (MaterialOptions & O)[K]): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         this.options[key] = value;
     }
 
@@ -273,6 +306,10 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
      * Binds the material
      */
     public use(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         StateManager.useProgram(this.program);
 
         this.deferredSets.forEach(set => {
@@ -296,5 +333,16 @@ export default class Material<T extends Record<string, MaterialUniformType> = {}
 
         glCullFace(this.options.cullFace);
         glFrontFace(this.options.vertexOrder);
+    }
+
+    public delete(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
+        StateManager.useProgram(0);
+        glDeleteProgram(this.program);
+
+        this.deleted = true;
     }
 }

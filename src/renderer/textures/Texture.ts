@@ -1,12 +1,16 @@
 import { BufferedImage } from "@minecraftts/buffered-image";
-import { glGenTextures, glTexImage2D, glTexParameteri, GL_NEAREST, GL_REPEAT, GL_RGBA, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_UNSIGNED_BYTE } from "@minecraftts/opengl";
+import { glGenTextures, glTexImage2D, glTexParameteri, GL_NEAREST, GL_REPEAT, GL_RGBA, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_UNSIGNED_BYTE, glDeleteTextures } from "@minecraftts/opengl";
+import DeletedError from "../../errors/DeletedError";
 import StateManager from "../../StateManager";
+import IDeletable from "../../util/IDeletable";
 
-export default class Texture {
-    private texture: number;
+export default class Texture implements IDeletable {
+    private readonly texture: number;
 
     private width: number;
     private height: number;
+
+    public deleted: boolean = false;
 
     constructor(image: BufferedImage) {
         const texturePtr: Uint32Array = new Uint32Array(1);
@@ -25,6 +29,10 @@ export default class Texture {
      * Binds the texture
      */
     public use(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         StateManager.bindTexture(GL_TEXTURE_2D, this.texture);
     }
 
@@ -33,6 +41,10 @@ export default class Texture {
      * @param image a `BufferedImage` containing the texture's data
      */
     public setImage(image: BufferedImage): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         const previousTexture = StateManager.getCurrentTexture(GL_TEXTURE_2D);
         const data = image.getData();
 
@@ -54,14 +66,37 @@ export default class Texture {
     }
 
     public getWidth(): number {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         return this.width;
     }
 
     public getHeight(): number {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         return this.height;
     }
 
     public getInternal(): number {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         return this.texture;
+    }
+
+    public delete(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
+        glDeleteTextures(1, new Uint32Array([ this.texture ]));
+        StateManager.bindTexture(GL_TEXTURE_2D, 0);
+
+        this.deleted = true;
     }
 }

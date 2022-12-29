@@ -27,9 +27,11 @@ import {
     glTexParameteri
 } from "@minecraftts/opengl";
 import Display from "../Display";
+import DeletedError from "../errors/DeletedError";
 import StateManager from "../StateManager";
+import IDeletable from "../util/IDeletable";
 
-export default class Framebuffer {
+export default class Framebuffer implements IDeletable {
     private texture: number;
 
     private fbo: number;
@@ -39,6 +41,8 @@ export default class Framebuffer {
 
     private width: number;
     private height: number;
+
+    public deleted: boolean = false;
 
     constructor(display: Display);
     constructor(width: number, height: number);
@@ -117,6 +121,10 @@ export default class Framebuffer {
     }
 
     public recreate(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         if (this.texture !== -1) glDeleteTextures(1, new Uint32Array([ this.texture ]));
         if (this.fbo !== -1) glDeleteFramebuffers(1, new Uint32Array([ this.fbo ]));
         if (this.rbo !== -1) glDeleteRenderbuffers(1, new Uint32Array([ this.rbo ]));
@@ -124,13 +132,36 @@ export default class Framebuffer {
         this.createObjects();
     }
 
+    public delete(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
+        if (this.texture !== -1) glDeleteTextures(1, new Uint32Array([this.texture]));
+        if (this.fbo !== -1) glDeleteFramebuffers(1, new Uint32Array([this.fbo]));
+        if (this.rbo !== -1) glDeleteRenderbuffers(1, new Uint32Array([this.rbo]));
+
+        Framebuffer.unbind();
+        StateManager.bindTexture(GL_TEXTURE_2D, 0);
+
+        this.deleted = true;
+    }
+
     public bind(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         if (this.fbo !== -1) {
             glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
         }
     }
 
     public bindTexture(): void {
+        if (this.deleted) {
+            throw new DeletedError();
+        }
+
         if (this.texture !== -1) {
             glBindTexture(GL_TEXTURE_2D, this.texture);
         }
